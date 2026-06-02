@@ -78300,6 +78300,10 @@ router3.post("/posts", upload.single("media"), async (req, res) => {
     return;
   }
   const profile = await getOrCreateProfile(req.user.id, req.user.username ?? req.user.id, req.user.firstName, req.user.lastName, req.user.profileImageUrl);
+  if (!profile.isArtist && !profile.isAdmin) {
+    res.status(403).json({ error: "Solo los artistas pueden publicar. Convi\xE9rtete en artista desde tu perfil." });
+    return;
+  }
   const { content } = req.body;
   let mediaUrl = null;
   let mediaType = null;
