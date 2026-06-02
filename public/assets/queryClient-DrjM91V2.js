@@ -1,1 +1,0 @@
-const s="/Program%20Files/Git/".replace(/\/$/,"")??"";async function i(t,a,r){const e=await fetch(`${s}${a}`,{method:t,credentials:"include",headers:r?{"Content-Type":"application/json"}:{},body:r?JSON.stringify(r):void 0});if(!e.ok&&t!=="DELETE"){const n=await e.json().catch(()=>({error:e.statusText}));throw new Error(n.error??"Request failed")}return e}export{i as a};
