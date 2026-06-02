@@ -78952,6 +78952,57 @@ router3.get("/chat/history", async (req, res) => {
   }).from(chatMessagesTable).innerJoin(userProfilesTable, eq(chatMessagesTable.authorId, userProfilesTable.id)).orderBy(desc(chatMessagesTable.createdAt)).limit(50);
   res.json(messages.reverse());
 });
+router3.get("/chat/poll", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const profile = await getOrCreateProfile(req.user.id, req.user.username ?? req.user.id, req.user.firstName, req.user.lastName, req.user.profileImageUrl);
+  const messages = await db.select({
+    id: chatMessagesTable.id,
+    content: chatMessagesTable.content,
+    createdAt: chatMessagesTable.createdAt,
+    authorId: chatMessagesTable.authorId,
+    username: userProfilesTable.username,
+    isArtist: userProfilesTable.isArtist
+  }).from(chatMessagesTable).innerJoin(userProfilesTable, eq(chatMessagesTable.authorId, userProfilesTable.id)).orderBy(desc(chatMessagesTable.createdAt)).limit(50);
+  const bannedUntil = profile.chatBannedUntil && new Date(profile.chatBannedUntil) > /* @__PURE__ */ new Date() ? new Date(profile.chatBannedUntil).toISOString() : null;
+  res.json({ messages: messages.reverse(), bannedUntil });
+});
+router3.post("/chat/message", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const profile = await getOrCreateProfile(req.user.id, req.user.username ?? req.user.id, req.user.firstName, req.user.lastName, req.user.profileImageUrl);
+  if (profile.chatBannedUntil && new Date(profile.chatBannedUntil) > /* @__PURE__ */ new Date()) {
+    res.status(403).json({ error: "Tu chat esta restringido por un administrador.", bannedUntil: new Date(profile.chatBannedUntil).toISOString() });
+    return;
+  }
+  const content = (typeof req.body?.content === "string" ? req.body.content : "").trim().slice(0, 500);
+  if (!content) {
+    res.status(400).json({ error: "Mensaje vac\xEDo" });
+    return;
+  }
+  const [saved] = await db.insert(chatMessagesTable).values({ content, authorId: profile.id }).returning();
+  broadcastToAll({
+    type: "message",
+    id: saved.id,
+    content: saved.content,
+    createdAt: saved.createdAt,
+    authorId: profile.id,
+    username: profile.username,
+    isArtist: profile.isArtist
+  });
+  res.json({
+    id: saved.id,
+    content: saved.content,
+    createdAt: saved.createdAt.toISOString(),
+    authorId: profile.id,
+    username: profile.username,
+    isArtist: profile.isArtist
+  });
+});
 router3.get("/admin/chat/messages", async (req, res) => {
   if (!req.isAuthenticated()) {
     res.status(401).json({ error: "Unauthorized" });
