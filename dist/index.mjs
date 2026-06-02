@@ -77270,24 +77270,31 @@ async function sendPasswordResetEmail(email3, resetUrl) {
       to: email3,
       subject: "\u{1F511} Recuperar contrase\xF1a \u2014 CLUB MDA",
       html: `
-        <div style="font-family: Arial, sans-serif; background: #0A0A0A; color: #EDEDED; padding: 32px; max-width: 600px; margin: 0 auto; border-radius: 12px;">
-          <div style="text-align: center; margin-bottom: 24px;">
-            <h1 style="color: #FF0099; font-size: 28px; margin: 0; letter-spacing: 2px;">CLUB MDA</h1>
-            <p style="color: #8C8C8C; font-size: 12px; letter-spacing: 3px; margin-top: 4px;">ACADEMIA MARTES DE ALIKA</p>
-          </div>
-          <div style="background: #121212; border: 1px solid #2A1A24; border-radius: 12px; padding: 24px; text-align: center;">
-            <h2 style="color: #FFFFFF; margin-top: 0; font-size: 20px;">Recuperar contrase\xF1a</h2>
-            <p style="color: #8C8C8C; font-size: 14px; line-height: 1.6;">
-              Recibimos una solicitud para restablecer tu contrase\xF1a. Haz clic en el boton para crear una nueva:
-            </p>
-            <a href="${resetUrl}" style="display: inline-block; background: #FF0099; color: #FFFFFF; font-weight: bold; font-size: 14px; text-decoration: none; padding: 14px 32px; border-radius: 50px; margin: 16px 0; letter-spacing: 1px;">
-              CAMBIAR CONTRASE\xD1A
-            </a>
-            <p style="color: #666; font-size: 12px; margin-top: 16px;">
-              Este enlace expira en 1 hora.<br/>Si no solicitaste esto, ignora este mensaje.
-            </p>
-          </div>
-        </div>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: #0A0A0A; margin: 0; padding: 0;">
+          <tr><td align="center" style="padding: 48px 16px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width: 760px; font-family: Arial, sans-serif;">
+              <tr><td align="center" style="padding-bottom: 32px;">
+                <h1 style="color: #FF0099; font-size: 34px; margin: 0; letter-spacing: 3px;">CLUB MDA</h1>
+                <p style="color: #8C8C8C; font-size: 13px; letter-spacing: 4px; margin-top: 6px;">ACADEMIA MARTES DE ALIKA</p>
+              </td></tr>
+              <tr><td style="background: #121212; border: 1px solid #2A1A24; border-radius: 16px; padding: 48px 40px; text-align: center;">
+                <h2 style="color: #FFFFFF; margin-top: 0; font-size: 24px;">Recuperar contrase\xF1a</h2>
+                <p style="color: #8C8C8C; font-size: 15px; line-height: 1.7; max-width: 520px; margin: 12px auto 28px;">
+                  Recibimos una solicitud para restablecer tu contrase\xF1a. Haz clic en el boton para crear una nueva:
+                </p>
+                <a href="${resetUrl}" style="display: inline-block; background: #FF0099; color: #FFFFFF; font-weight: bold; font-size: 15px; text-decoration: none; padding: 16px 44px; border-radius: 50px; letter-spacing: 1px;">
+                  CAMBIAR CONTRASE\xD1A
+                </a>
+                <p style="color: #666; font-size: 12px; margin-top: 28px;">
+                  Este enlace expira en 1 hora.<br/>Si no solicitaste esto, ignora este mensaje.
+                </p>
+              </td></tr>
+              <tr><td align="center" style="padding-top: 24px;">
+                <p style="color: #444; font-size: 11px;">\xA9 CLUB MDA \xB7 productoramda.cl</p>
+              </td></tr>
+            </table>
+          </td></tr>
+        </table>
       `
     });
     logger.info({ email: email3 }, "Password reset email sent");
