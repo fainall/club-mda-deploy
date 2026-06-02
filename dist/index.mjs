@@ -76977,6 +76977,7 @@ var challengesTable = pgTable("challenges", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description").notNull(),
+  category: varchar("category", { length: 50 }),
   weekNumber: integer("week_number"),
   scheduledAt: timestamp("scheduled_at", { withTimezone: true }),
   durationMinutes: integer("duration_minutes").default(90),
@@ -78205,8 +78206,8 @@ router3.post("/challenges", async (req, res) => {
     res.status(403).json({ error: "Forbidden" });
     return;
   }
-  const { title, description, weekNumber } = req.body;
-  const [created] = await db.insert(challengesTable).values({ title, description, weekNumber }).returning();
+  const { title, description, weekNumber, category } = req.body;
+  const [created] = await db.insert(challengesTable).values({ title, description, weekNumber, category: category ?? null }).returning();
   res.status(201).json({ ...created, isCompleted: false, createdAt: created.createdAt.toISOString() });
 });
 router3.post("/challenges/:id/complete", async (req, res) => {
