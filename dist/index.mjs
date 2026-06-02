@@ -79011,6 +79011,8 @@ router3.get("/users/:username/profile", async (req, res) => {
     posts: userPosts.map((p) => ({
       id: p.id,
       content: p.content,
+      mediaUrl: p.mediaUrl,
+      mediaType: p.mediaType,
       createdAt: p.createdAt.toISOString()
     })),
     createdAt: target.createdAt.toISOString()
