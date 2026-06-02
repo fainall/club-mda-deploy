@@ -77840,7 +77840,7 @@ router3.get("/users/me", async (req, res) => {
     req.user.lastName,
     req.user.profileImageUrl
   );
-  const allUsers = await db.select({ id: userProfilesTable.id, stars: userProfilesTable.stars }).from(userProfilesTable).orderBy(desc(userProfilesTable.stars));
+  const allUsers = await db.select({ id: userProfilesTable.id, stars: userProfilesTable.stars }).from(userProfilesTable).where(eq(userProfilesTable.isAdmin, false)).orderBy(desc(userProfilesTable.stars));
   const rank = allUsers.findIndex((u) => u.id === profile.id) + 1;
   res.json({
     id: profile.id,
@@ -77968,7 +77968,7 @@ router3.get("/dashboard", async (req, res) => {
   const upcomingEventsRaw = await db.select().from(eventsTable).where(eq(eventsTable.eventType, "martes_de_alika")).orderBy(eventsTable.eventDate).limit(3);
   const eventsResult = upcomingEventsRaw.length > 0 ? upcomingEventsRaw : await db.select().from(eventsTable).orderBy(eventsTable.eventDate).limit(3);
   const upcomingEvents = eventsResult.map((e) => ({ ...e, eventDate: e.eventDate.toISOString(), createdAt: e.createdAt.toISOString() }));
-  const allUsers = await db.select({ id: userProfilesTable.id, stars: userProfilesTable.stars }).from(userProfilesTable).orderBy(desc(userProfilesTable.stars));
+  const allUsers = await db.select({ id: userProfilesTable.id, stars: userProfilesTable.stars }).from(userProfilesTable).where(eq(userProfilesTable.isAdmin, false)).orderBy(desc(userProfilesTable.stars));
   const rank = allUsers.findIndex((u) => u.id === profile.id) + 1;
   res.json({
     greeting,
@@ -77995,7 +77995,7 @@ router3.get("/leaderboard", async (req, res) => {
     req.user.lastName,
     req.user.profileImageUrl
   );
-  const top = await db.select().from(userProfilesTable).orderBy(desc(userProfilesTable.stars)).limit(20);
+  const top = await db.select().from(userProfilesTable).where(eq(userProfilesTable.isAdmin, false)).orderBy(desc(userProfilesTable.stars)).limit(20);
   const myRank = top.findIndex((u) => u.id === profile.id) + 1;
   const result = top.map((u, i) => ({
     rank: i + 1,
@@ -78986,7 +78986,7 @@ router3.get("/users/:username/profile", async (req, res) => {
   const userPosts = await db.select().from(postsTable).where(eq(postsTable.authorId, target.id)).orderBy(desc(postsTable.createdAt)).limit(30);
   const [{ value: classCount }] = await db.select({ value: count() }).from(classCompletionsTable).where(eq(classCompletionsTable.userId, target.id));
   const [{ value: challengeCount }] = await db.select({ value: count() }).from(challengeCompletionsTable).where(eq(challengeCompletionsTable.userId, target.id));
-  const allUsers = await db.select({ id: userProfilesTable.id, stars: userProfilesTable.stars }).from(userProfilesTable).orderBy(desc(userProfilesTable.stars));
+  const allUsers = await db.select({ id: userProfilesTable.id, stars: userProfilesTable.stars }).from(userProfilesTable).where(eq(userProfilesTable.isAdmin, false)).orderBy(desc(userProfilesTable.stars));
   const rank = allUsers.findIndex((u) => u.id === target.id) + 1;
   res.json({
     id: target.id,
@@ -79066,7 +79066,7 @@ router3.get("/artists/:username", async (req, res) => {
   });
 });
 router3.get("/ranking", async (_req, res) => {
-  const users = await db.select().from(userProfilesTable).orderBy(desc(userProfilesTable.stars));
+  const users = await db.select().from(userProfilesTable).where(eq(userProfilesTable.isAdmin, false)).orderBy(desc(userProfilesTable.stars));
   res.json(users.map((u, i) => ({
     rank: i + 1,
     id: u.id,
@@ -79103,7 +79103,7 @@ router3.get("/profile/:username", async (req, res) => {
   const userPosts = await db.select().from(postsTable).where(eq(postsTable.authorId, target.id)).orderBy(desc(postsTable.createdAt)).limit(30);
   const [{ value: classCount }] = await db.select({ value: count() }).from(classCompletionsTable).where(eq(classCompletionsTable.userId, target.id));
   const [{ value: challengeCount }] = await db.select({ value: count() }).from(challengeCompletionsTable).where(eq(challengeCompletionsTable.userId, target.id));
-  const allUsers = await db.select({ id: userProfilesTable.id, stars: userProfilesTable.stars }).from(userProfilesTable).orderBy(desc(userProfilesTable.stars));
+  const allUsers = await db.select({ id: userProfilesTable.id, stars: userProfilesTable.stars }).from(userProfilesTable).where(eq(userProfilesTable.isAdmin, false)).orderBy(desc(userProfilesTable.stars));
   const rank = allUsers.findIndex((u) => u.id === target.id) + 1;
   res.json({
     id: target.id,
