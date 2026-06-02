@@ -1,0 +1,12 @@
+{
+  "name": "club-mda-academia",
+  "version": "1.0.0",
+  "private": true,
+  "main": "app.js",
+  "scripts": {
+    "start": "node dist/index.mjs"
+  },
+  "dependencies": {
+    "nodemailer": "^7.0.4"
+  }
+}
