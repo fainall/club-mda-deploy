@@ -79063,6 +79063,8 @@ router3.get("/artists/:username", async (req, res) => {
     posts: artistPosts.map((p) => ({
       id: p.id,
       content: p.content,
+      mediaUrl: p.mediaUrl,
+      mediaType: p.mediaType,
       createdAt: p.createdAt.toISOString()
     }))
   });
