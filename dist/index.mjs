@@ -77910,6 +77910,30 @@ router3.put("/users/me", async (req, res) => {
     createdAt: updated.createdAt.toISOString()
   });
 });
+router3.post("/users/me/avatar", upload.single("avatar"), async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  if (!req.file) {
+    res.status(400).json({ error: "No se recibi\xF3 ninguna imagen" });
+    return;
+  }
+  if (!req.file.mimetype.startsWith("image/")) {
+    res.status(400).json({ error: "Solo se permiten im\xE1genes" });
+    return;
+  }
+  const profile = await getOrCreateProfile(
+    req.user.id,
+    req.user.username ?? req.user.id,
+    req.user.firstName,
+    req.user.lastName,
+    req.user.profileImageUrl
+  );
+  const profileImage = `/uploads/${req.file.filename}`;
+  const [updated] = await db.update(userProfilesTable).set({ profileImage }).where(eq(userProfilesTable.id, profile.id)).returning();
+  res.json({ profileImage: updated.profileImage });
+});
 router3.get("/users/me/progress", async (req, res) => {
   if (!req.isAuthenticated()) {
     res.status(401).json({ error: "Unauthorized" });
