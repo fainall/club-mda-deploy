@@ -77934,6 +77934,46 @@ router3.post("/users/me/avatar", upload.single("avatar"), async (req, res) => {
   const [updated] = await db.update(userProfilesTable).set({ profileImage }).where(eq(userProfilesTable.id, profile.id)).returning();
   res.json({ profileImage: updated.profileImage });
 });
+var onlinePresence = /* @__PURE__ */ new Map();
+var PRESENCE_WINDOW_MS = 9e4;
+router3.post("/presence/ping", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const profile = await getOrCreateProfile(
+    req.user.id,
+    req.user.username ?? req.user.id,
+    req.user.firstName,
+    req.user.lastName,
+    req.user.profileImageUrl
+  );
+  onlinePresence.set(profile.id, {
+    username: profile.username,
+    artisticName: profile.artisticName,
+    isArtist: profile.isArtist,
+    isAdmin: profile.isAdmin,
+    profileImage: profile.profileImage,
+    lastSeen: Date.now()
+  });
+  res.json({ ok: true });
+});
+router3.get("/presence", (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const now = Date.now();
+  const users = [];
+  for (const [id, e] of onlinePresence) {
+    if (now - e.lastSeen > PRESENCE_WINDOW_MS) {
+      onlinePresence.delete(id);
+      continue;
+    }
+    users.push({ id, username: e.username, artisticName: e.artisticName, isArtist: e.isArtist, isAdmin: e.isAdmin, profileImage: e.profileImage });
+  }
+  res.json({ count: users.length, users });
+});
 router3.get("/users/me/progress", async (req, res) => {
   if (!req.isAuthenticated()) {
     res.status(401).json({ error: "Unauthorized" });
