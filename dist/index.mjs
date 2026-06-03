@@ -76988,6 +76988,12 @@ var challengeCompletionsTable = pgTable("challenge_completions", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => userProfilesTable.id),
   challengeId: integer("challenge_id").notNull().references(() => challengesTable.id),
+  // 'pending' (awaiting admin review) | 'approved' | 'rejected'. Legacy rows default to 'approved'.
+  status: varchar("status", { length: 20 }).notNull().default("approved"),
+  mediaUrl: text("media_url"),
+  mediaType: varchar("media_type", { length: 20 }),
+  approvedAt: timestamp("approved_at", { withTimezone: true }),
+  feedPostId: integer("feed_post_id"),
   completedAt: timestamp("completed_at", { withTimezone: true }).notNull().defaultNow()
 });
 var postsTable = pgTable("posts", {
@@ -77769,8 +77775,8 @@ var storage = import_multer.default.diskStorage({
 });
 var upload = (0, import_multer.default)({
   storage,
-  limits: { fileSize: 50 * 1024 * 1024 },
-  // 50 MB max
+  limits: { fileSize: 80 * 1024 * 1024 },
+  // 80 MB max (reto videos)
   fileFilter: (_req, file2, cb) => {
     const allowed = /\.(jpg|jpeg|png|gif|webp|mp4|webm|mov)$/i;
     if (allowed.test(path.extname(file2.originalname))) {
@@ -78188,13 +78194,17 @@ router3.get("/challenges", async (req, res) => {
   const profile = await getOrCreateProfile(req.user.id, req.user.username ?? req.user.id, req.user.firstName, req.user.lastName, req.user.profileImageUrl);
   const challenges = await db.select().from(challengesTable).orderBy(desc(challengesTable.weekNumber));
   const completions = await db.select().from(challengeCompletionsTable).where(eq(challengeCompletionsTable.userId, profile.id));
-  const completedIds = new Set(completions.map((c) => c.challengeId));
-  res.json(challenges.map((c) => ({
-    ...c,
-    isCompleted: completedIds.has(c.id),
-    createdAt: c.createdAt.toISOString(),
-    scheduledAt: c.scheduledAt ? c.scheduledAt.toISOString() : null
-  })));
+  const statusMap = new Map(completions.map((c) => [c.challengeId, c.status]));
+  res.json(challenges.map((c) => {
+    const myStatus = statusMap.get(c.id) ?? "none";
+    return {
+      ...c,
+      isCompleted: myStatus === "approved",
+      myStatus,
+      createdAt: c.createdAt.toISOString(),
+      scheduledAt: c.scheduledAt ? c.scheduledAt.toISOString() : null
+    };
+  }));
 });
 router3.post("/challenges", async (req, res) => {
   if (!req.isAuthenticated()) {
@@ -78210,23 +78220,115 @@ router3.post("/challenges", async (req, res) => {
   const [created] = await db.insert(challengesTable).values({ title, description, weekNumber, category: category ?? null }).returning();
   res.status(201).json({ ...created, isCompleted: false, createdAt: created.createdAt.toISOString() });
 });
-router3.post("/challenges/:id/complete", async (req, res) => {
+router3.post("/challenges/:id/complete", upload.single("media"), async (req, res) => {
   if (!req.isAuthenticated()) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
   const profile = await getOrCreateProfile(req.user.id, req.user.username ?? req.user.id, req.user.firstName, req.user.lastName, req.user.profileImageUrl);
-  const challengeId = parseInt(req.params.id);
-  const existing = await db.select().from(challengeCompletionsTable).where(and(eq(challengeCompletionsTable.userId, profile.id), eq(challengeCompletionsTable.challengeId, challengeId)));
-  if (existing.length === 0) {
-    await db.insert(challengeCompletionsTable).values({ userId: profile.id, challengeId });
-    const { bonus } = await updateStreak(profile);
-    const starsEarned = 2 + bonus;
-    await db.update(userProfilesTable).set({ xp: profile.xp + 50, stars: profile.stars + starsEarned }).where(eq(userProfilesTable.id, profile.id));
-    res.json({ completed: true, message: "Reto completado", xpEarned: 50, starsEarned, streakBonus: bonus });
-  } else {
-    res.json({ completed: true, message: "Reto completado", xpEarned: 0, starsEarned: 0, streakBonus: 0 });
+  if (!profile.isArtist && !profile.isAdmin) {
+    res.status(403).json({ error: "Solo los artistas pueden enviar retos. Convi\xE9rtete en artista desde tu perfil." });
+    return;
   }
+  const challengeId = parseInt(req.params.id);
+  if (!req.file) {
+    res.status(400).json({ error: "Debes subir tu video o foto del reto." });
+    return;
+  }
+  const mediaUrl = `/uploads/${req.file.filename}`;
+  const ext = path.extname(req.file.originalname).toLowerCase();
+  const mediaType = [".mp4", ".webm", ".mov"].includes(ext) ? "video" : "image";
+  const [existing] = await db.select().from(challengeCompletionsTable).where(and(eq(challengeCompletionsTable.userId, profile.id), eq(challengeCompletionsTable.challengeId, challengeId))).limit(1);
+  if (existing && existing.status === "approved") {
+    res.status(400).json({ error: "Ya completaste este reto." });
+    return;
+  }
+  if (existing && existing.status === "pending") {
+    res.status(400).json({ error: "Ya enviaste este reto. Est\xE1 pendiente de aprobaci\xF3n." });
+    return;
+  }
+  if (existing) {
+    await db.update(challengeCompletionsTable).set({ status: "pending", mediaUrl, mediaType, completedAt: /* @__PURE__ */ new Date(), approvedAt: null, feedPostId: null }).where(eq(challengeCompletionsTable.id, existing.id));
+  } else {
+    await db.insert(challengeCompletionsTable).values({ userId: profile.id, challengeId, status: "pending", mediaUrl, mediaType });
+  }
+  res.json({ status: "pending", message: "\xA1Reto enviado! Qued\xF3 pendiente de aprobaci\xF3n del equipo." });
+});
+router3.get("/admin/challenge-submissions", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const admin = await getOrCreateProfile(req.user.id, req.user.username ?? req.user.id, req.user.firstName, req.user.lastName, req.user.profileImageUrl);
+  if (!admin.isAdmin) {
+    res.status(403).json({ error: "Forbidden" });
+    return;
+  }
+  const rows = await db.select({
+    id: challengeCompletionsTable.id,
+    challengeId: challengeCompletionsTable.challengeId,
+    mediaUrl: challengeCompletionsTable.mediaUrl,
+    mediaType: challengeCompletionsTable.mediaType,
+    submittedAt: challengeCompletionsTable.completedAt,
+    challengeTitle: challengesTable.title,
+    challengeCategory: challengesTable.category,
+    userId: userProfilesTable.id,
+    username: userProfilesTable.username,
+    artisticName: userProfilesTable.artisticName,
+    profileImage: userProfilesTable.profileImage
+  }).from(challengeCompletionsTable).innerJoin(challengesTable, eq(challengeCompletionsTable.challengeId, challengesTable.id)).innerJoin(userProfilesTable, eq(challengeCompletionsTable.userId, userProfilesTable.id)).where(eq(challengeCompletionsTable.status, "pending")).orderBy(asc(challengeCompletionsTable.completedAt));
+  res.json(rows.map((r) => ({ ...r, submittedAt: r.submittedAt.toISOString() })));
+});
+router3.post("/admin/challenge-submissions/:id/approve", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const admin = await getOrCreateProfile(req.user.id, req.user.username ?? req.user.id, req.user.firstName, req.user.lastName, req.user.profileImageUrl);
+  if (!admin.isAdmin) {
+    res.status(403).json({ error: "Forbidden" });
+    return;
+  }
+  const id = parseInt(req.params.id);
+  const [sub] = await db.select().from(challengeCompletionsTable).where(eq(challengeCompletionsTable.id, id)).limit(1);
+  if (!sub) {
+    res.status(404).json({ error: "No encontrado" });
+    return;
+  }
+  if (sub.status === "approved") {
+    res.json({ ok: true, message: "Ya estaba aprobado" });
+    return;
+  }
+  const [challenge] = await db.select().from(challengesTable).where(eq(challengesTable.id, sub.challengeId)).limit(1);
+  const [user] = await db.select().from(userProfilesTable).where(eq(userProfilesTable.id, sub.userId)).limit(1);
+  if (!challenge || !user) {
+    res.status(404).json({ error: "Datos no encontrados" });
+    return;
+  }
+  const [post] = await db.insert(postsTable).values({
+    authorId: user.id,
+    content: `\u2705 Complet\xE9 el reto: "${challenge.title}"${challenge.category ? ` \xB7 ${challenge.category}` : ""}`,
+    mediaUrl: sub.mediaUrl,
+    mediaType: sub.mediaType
+  }).returning();
+  const starsEarned = 2;
+  await db.update(userProfilesTable).set({ xp: user.xp + 50, stars: user.stars + starsEarned }).where(eq(userProfilesTable.id, user.id));
+  await db.update(challengeCompletionsTable).set({ status: "approved", approvedAt: /* @__PURE__ */ new Date(), feedPostId: post.id }).where(eq(challengeCompletionsTable.id, id));
+  res.json({ ok: true, message: "Reto aprobado y publicado en el feed", starsEarned, feedPostId: post.id });
+});
+router3.post("/admin/challenge-submissions/:id/reject", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const admin = await getOrCreateProfile(req.user.id, req.user.username ?? req.user.id, req.user.firstName, req.user.lastName, req.user.profileImageUrl);
+  if (!admin.isAdmin) {
+    res.status(403).json({ error: "Forbidden" });
+    return;
+  }
+  const id = parseInt(req.params.id);
+  await db.update(challengeCompletionsTable).set({ status: "rejected" }).where(eq(challengeCompletionsTable.id, id));
+  res.json({ ok: true, message: "Reto rechazado. El artista puede reenviarlo." });
 });
 router3.get("/feed", async (req, res) => {
   const page = parseInt(req.query.page) || 1;
