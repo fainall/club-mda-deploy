@@ -78233,20 +78233,29 @@ router3.get("/feed", async (req, res) => {
   const limit = 20;
   const offset = (page - 1) * limit;
   const posts = await db.select().from(postsTable).orderBy(desc(postsTable.createdAt)).limit(limit).offset(offset);
+  if (posts.length === 0) {
+    res.json([]);
+    return;
+  }
   let currentUserId = null;
   if (req.isAuthenticated()) {
     const profile = await getOrCreateProfile(req.user.id, req.user.username ?? req.user.id, req.user.firstName, req.user.lastName, req.user.profileImageUrl);
     currentUserId = profile.id;
   }
-  const result = await Promise.all(posts.map(async (post) => {
-    const [author] = await db.select().from(userProfilesTable).where(eq(userProfilesTable.id, post.authorId)).limit(1);
-    const [{ value: commentCount }] = await db.select({ value: count() }).from(commentsTable).where(eq(commentsTable.postId, post.id));
-    const [{ value: likeCount }] = await db.select({ value: count() }).from(postLikesTable).where(eq(postLikesTable.postId, post.id));
-    let isLiked = false;
-    if (currentUserId) {
-      const [liked] = await db.select().from(postLikesTable).where(and(eq(postLikesTable.postId, post.id), eq(postLikesTable.userId, currentUserId))).limit(1);
-      isLiked = !!liked;
-    }
+  const postIds = posts.map((p) => p.id);
+  const authorIds = [...new Set(posts.map((p) => p.authorId))];
+  const [authors, commentCounts, likeCounts, myLikes] = await Promise.all([
+    db.select().from(userProfilesTable).where(inArray(userProfilesTable.id, authorIds)),
+    db.select({ postId: commentsTable.postId, value: count() }).from(commentsTable).where(inArray(commentsTable.postId, postIds)).groupBy(commentsTable.postId),
+    db.select({ postId: postLikesTable.postId, value: count() }).from(postLikesTable).where(inArray(postLikesTable.postId, postIds)).groupBy(postLikesTable.postId),
+    currentUserId ? db.select({ postId: postLikesTable.postId }).from(postLikesTable).where(and(inArray(postLikesTable.postId, postIds), eq(postLikesTable.userId, currentUserId))) : Promise.resolve([])
+  ]);
+  const authorMap = new Map(authors.map((a) => [a.id, a]));
+  const commentMap = new Map(commentCounts.map((c) => [c.postId, Number(c.value)]));
+  const likeMap = new Map(likeCounts.map((l) => [l.postId, Number(l.value)]));
+  const likedSet = new Set(myLikes.map((l) => l.postId));
+  const result = posts.map((post) => {
+    const author = authorMap.get(post.authorId);
     return {
       id: post.id,
       content: post.content,
@@ -78257,12 +78266,12 @@ router3.get("/feed", async (req, res) => {
       authorUsername: author?.username ?? "unknown",
       authorImage: author?.profileImage ?? null,
       authorIsArtist: author?.isArtist ?? false,
-      commentCount: Number(commentCount),
-      likeCount: Number(likeCount),
-      isLiked,
+      commentCount: commentMap.get(post.id) ?? 0,
+      likeCount: likeMap.get(post.id) ?? 0,
+      isLiked: likedSet.has(post.id),
       createdAt: post.createdAt.toISOString()
     };
-  }));
+  });
   res.json(result);
 });
 router3.get("/posts", async (req, res) => {
@@ -78374,21 +78383,26 @@ router3.delete("/posts/:id", async (req, res) => {
 });
 router3.get("/posts/:id/comments", async (req, res) => {
   const postId = parseInt(req.params.id);
-  const comments = await db.select().from(commentsTable).where(eq(commentsTable.postId, postId)).orderBy(commentsTable.createdAt);
-  const result = await Promise.all(comments.map(async (comment) => {
-    const [author] = await db.select().from(userProfilesTable).where(eq(userProfilesTable.id, comment.authorId)).limit(1);
-    return {
-      id: comment.id,
-      content: comment.content,
-      authorId: comment.authorId,
-      authorName: author?.artisticName ?? author?.username ?? "Unknown",
-      authorUsername: author?.username ?? "unknown",
-      authorImage: author?.profileImage ?? null,
-      postId: comment.postId,
-      createdAt: comment.createdAt.toISOString()
-    };
-  }));
-  res.json(result);
+  const rows = await db.select({
+    id: commentsTable.id,
+    content: commentsTable.content,
+    authorId: commentsTable.authorId,
+    postId: commentsTable.postId,
+    createdAt: commentsTable.createdAt,
+    artisticName: userProfilesTable.artisticName,
+    username: userProfilesTable.username,
+    profileImage: userProfilesTable.profileImage
+  }).from(commentsTable).innerJoin(userProfilesTable, eq(commentsTable.authorId, userProfilesTable.id)).where(eq(commentsTable.postId, postId)).orderBy(commentsTable.createdAt);
+  res.json(rows.map((c) => ({
+    id: c.id,
+    content: c.content,
+    authorId: c.authorId,
+    authorName: c.artisticName ?? c.username ?? "Unknown",
+    authorUsername: c.username ?? "unknown",
+    authorImage: c.profileImage ?? null,
+    postId: c.postId,
+    createdAt: c.createdAt.toISOString()
+  })));
 });
 router3.post("/posts/:id/comments", async (req, res) => {
   if (!req.isAuthenticated()) {
