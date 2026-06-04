@@ -77445,6 +77445,7 @@ router2.post("/auth/register", async (req, res) => {
   const [profile] = await db.insert(userProfilesTable).values({
     userId: user.id,
     username,
+    email: email3.toLowerCase(),
     firstName: firstName ?? null,
     lastName: lastName ?? null,
     isAdmin: false
@@ -77538,6 +77539,7 @@ router2.get("/auth/user", async (req, res) => {
     const [created] = await db.insert(userProfilesTable).values({
       userId: authUserId,
       username: newUsername,
+      email: sessionUser.email ?? null,
       firstName: sessionUser.firstName ?? null,
       lastName: sessionUser.lastName ?? null,
       profileImage: sessionUser.profileImageUrl ?? null,
@@ -77962,10 +77964,21 @@ async function updateStreak(profile) {
 }
 async function getOrCreateProfile(userId, username, firstName, lastName, profileImage) {
   const existing = await db.select().from(userProfilesTable).where(eq(userProfilesTable.userId, userId)).limit(1);
-  if (existing.length > 0) return existing[0];
+  if (existing.length > 0) {
+    if (!existing[0].email) {
+      const [u2] = await db.select({ email: usersTable.email }).from(usersTable).where(eq(usersTable.id, userId)).limit(1);
+      if (u2?.email) {
+        await db.update(userProfilesTable).set({ email: u2.email }).where(eq(userProfilesTable.id, existing[0].id));
+        existing[0].email = u2.email;
+      }
+    }
+    return existing[0];
+  }
+  const [u] = await db.select({ email: usersTable.email }).from(usersTable).where(eq(usersTable.id, userId)).limit(1);
   const [created] = await db.insert(userProfilesTable).values({
     userId,
     username,
+    email: u?.email ?? null,
     firstName: firstName ?? null,
     lastName: lastName ?? null,
     profileImage: profileImage ?? null,
