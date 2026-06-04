@@ -85306,7 +85306,28 @@ app.use(
     }
   })
 );
-app.use((0, import_cors.default)({ credentials: true, origin: true }));
+var allowedOrigins = [
+  "https://productoramda.cl",
+  "https://www.productoramda.cl",
+  /^http:\/\/localhost(:\d+)?$/,
+  /^http:\/\/127\.0\.0\.1(:\d+)?$/
+];
+if (process.env.ALLOWED_ORIGINS) {
+  for (const o of process.env.ALLOWED_ORIGINS.split(",")) {
+    const t = o.trim();
+    if (t) allowedOrigins.push(t);
+  }
+}
+app.use(
+  (0, import_cors.default)({
+    credentials: true,
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true);
+      const ok = allowedOrigins.some((o) => o instanceof RegExp ? o.test(origin) : o === origin);
+      cb(null, ok);
+    }
+  })
+);
 app.use((0, import_cookie_parser.default)());
 app.use(import_express5.default.json());
 app.use(import_express5.default.urlencoded({ extended: true }));
