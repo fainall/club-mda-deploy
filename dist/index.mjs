@@ -79757,7 +79757,7 @@ router3.post("/paid-classes/:id/pay-enrollment", async (req, res) => {
     enrollmentId = created.id;
   }
   const commerceOrder = `MDA-E-${classId}-${profile.id}-${Date.now().toString(36)}`;
-  const email3 = profile.email || `user${profile.id}@productoramda.cl`;
+  const email3 = req.user.email || profile.email || `user${profile.id}@productoramda.cl`;
   try {
     const pay = await createPayment({ commerceOrder, subject: `Inscripci\xF3n: ${cls.title}`.slice(0, 80), amount: cls.price, email: email3, ...flowUrls() });
     await db.insert(paymentsTable).values({
@@ -79807,7 +79807,7 @@ router3.post("/paid-classes/:id/pay-registration", async (req, res) => {
     return;
   }
   const commerceOrder = `MDA-R-${classId}-${profile.id}-${Date.now().toString(36)}`;
-  const email3 = profile.email || `user${profile.id}@productoramda.cl`;
+  const email3 = req.user.email || profile.email || `user${profile.id}@productoramda.cl`;
   try {
     const pay = await createPayment({ commerceOrder, subject: `Inscripci\xF3n instructor: ${cls.title}`.slice(0, 80), amount: cls.registrationFee, email: email3, ...flowUrls() });
     await db.insert(paymentsTable).values({
