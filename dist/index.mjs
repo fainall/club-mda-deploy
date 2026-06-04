@@ -79518,6 +79518,7 @@ router3.get("/paid-classes", async (req, res) => {
   const result = await Promise.all(classes.map(async (cls) => {
     const [instructor] = await db.select().from(userProfilesTable).where(eq(userProfilesTable.id, cls.instructorId)).limit(1);
     const [{ value: enrolled }] = await db.select({ value: count() }).from(paidClassEnrollmentsTable).where(and(eq(paidClassEnrollmentsTable.paidClassId, cls.id), eq(paidClassEnrollmentsTable.status, "enrolled")));
+    const [{ value: lessonCount }] = await db.select({ value: count() }).from(courseLessonsTable).where(eq(courseLessonsTable.paidClassId, cls.id));
     let enrollmentStatus = null;
     if (req.isAuthenticated()) {
       const profile = await getOrCreateProfile(req.user.id, req.user.username ?? req.user.id, req.user.firstName, req.user.lastName, req.user.profileImageUrl);
@@ -79544,6 +79545,7 @@ router3.get("/paid-classes", async (req, res) => {
       instructorImage: instructor?.profileImage ?? null,
       instructorIsArtist: instructor?.isArtist ?? false,
       enrolledCount: Number(enrolled),
+      lessonCount: Number(lessonCount),
       spotsLeft: (cls.maxStudents ?? 10) - Number(enrolled),
       isEnrolled: enrollmentStatus === "enrolled",
       enrollmentStatus,
@@ -79923,6 +79925,41 @@ router3.post("/my-courses/:id/publish", async (req, res) => {
   }
   const [updated] = await db.update(paidClassesTable).set({ status: publish ? "active" : "pending", updatedAt: /* @__PURE__ */ new Date() }).where(eq(paidClassesTable.id, r.cls.id)).returning();
   res.json({ id: updated.id, status: updated.status });
+});
+router3.post("/my-courses/:id/cover", upload.single("cover"), async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const profile = await meProfile(req);
+  const r = await loadOwnedClass(parseInt(req.params.id), profile);
+  if (r.error) {
+    res.status(r.error).json({ error: "No autorizado" });
+    return;
+  }
+  if (!req.file) {
+    res.status(400).json({ error: "Falta la imagen" });
+    return;
+  }
+  const coverImage = `/uploads/${req.file.filename}`;
+  await db.update(paidClassesTable).set({ coverImage, updatedAt: /* @__PURE__ */ new Date() }).where(eq(paidClassesTable.id, r.cls.id));
+  res.json({ coverImage });
+});
+router3.delete("/my-courses/:id", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const profile = await meProfile(req);
+  const r = await loadOwnedClass(parseInt(req.params.id), profile);
+  if (r.error) {
+    res.status(r.error).json({ error: r.error === 404 ? "Curso no encontrado" : "No autorizado" });
+    return;
+  }
+  const lessons = await db.select().from(courseLessonsTable).where(eq(courseLessonsTable.paidClassId, r.cls.id));
+  for (const l of lessons) rmVideo(l.videoPath);
+  await db.delete(paidClassesTable).where(eq(paidClassesTable.id, r.cls.id));
+  res.json({ deleted: true });
 });
 router3.post("/my-courses/:id/modules", async (req, res) => {
   if (!req.isAuthenticated()) {
