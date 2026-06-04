@@ -18791,7 +18791,7 @@ var require_view = __commonJS({
     "use strict";
     var debug = require_src()("express:view");
     var path3 = __require("node:path");
-    var fs = __require("node:fs");
+    var fs2 = __require("node:fs");
     var dirname = path3.dirname;
     var basename = path3.basename;
     var extname = path3.extname;
@@ -18871,7 +18871,7 @@ var require_view = __commonJS({
     function tryStat(path4) {
       debug('stat "%s"', path4);
       try {
-        return fs.statSync(path4);
+        return fs2.statSync(path4);
       } catch (e) {
         return void 0;
       }
@@ -22497,7 +22497,7 @@ var require_send = __commonJS({
     var escapeHtml = require_escape_html();
     var etag = require_etag();
     var fresh = require_fresh();
-    var fs = __require("fs");
+    var fs2 = __require("fs");
     var mime = require_mime_types();
     var ms = require_ms();
     var onFinished = require_on_finished();
@@ -22779,7 +22779,7 @@ var require_send = __commonJS({
       var i = 0;
       var self2 = this;
       debug('stat "%s"', path4);
-      fs.stat(path4, function onstat(err, stat) {
+      fs2.stat(path4, function onstat(err, stat) {
         var pathEndsWithSep = path4[path4.length - 1] === sep;
         if (err && err.code === "ENOENT" && !extname(path4) && !pathEndsWithSep) {
           return next(err);
@@ -22796,7 +22796,7 @@ var require_send = __commonJS({
         }
         var p = path4 + "." + self2._extensions[i++];
         debug('stat "%s"', p);
-        fs.stat(p, function(err2, stat) {
+        fs2.stat(p, function(err2, stat) {
           if (err2) return next(err2);
           if (stat.isDirectory()) return next();
           self2.emit("file", p, stat);
@@ -22814,7 +22814,7 @@ var require_send = __commonJS({
         }
         var p = join(path4, self2._index[i]);
         debug('stat "%s"', p);
-        fs.stat(p, function(err2, stat) {
+        fs2.stat(p, function(err2, stat) {
           if (err2) return next(err2);
           if (stat.isDirectory()) return next();
           self2.emit("file", p, stat);
@@ -22826,7 +22826,7 @@ var require_send = __commonJS({
     SendStream.prototype.stream = function stream(path4, options) {
       var self2 = this;
       var res = this.res;
-      var stream2 = fs.createReadStream(path4, options);
+      var stream2 = fs2.createReadStream(path4, options);
       this.emit("stream", stream2);
       stream2.pipe(res);
       function cleanup() {
@@ -25231,7 +25231,7 @@ var require_atomic_sleep = __commonJS({
 var require_sonic_boom = __commonJS({
   "../../node_modules/.pnpm/sonic-boom@4.2.1/node_modules/sonic-boom/index.js"(exports, module) {
     "use strict";
-    var fs = __require("fs");
+    var fs2 = __require("fs");
     var EventEmitter = __require("events");
     var inherits = __require("util").inherits;
     var path3 = __require("path");
@@ -25288,20 +25288,20 @@ var require_sonic_boom = __commonJS({
       const mode = sonic.mode;
       if (sonic.sync) {
         try {
-          if (sonic.mkdir) fs.mkdirSync(path3.dirname(file2), { recursive: true });
-          const fd = fs.openSync(file2, flags, mode);
+          if (sonic.mkdir) fs2.mkdirSync(path3.dirname(file2), { recursive: true });
+          const fd = fs2.openSync(file2, flags, mode);
           fileOpened(null, fd);
         } catch (err) {
           fileOpened(err);
           throw err;
         }
       } else if (sonic.mkdir) {
-        fs.mkdir(path3.dirname(file2), { recursive: true }, (err) => {
+        fs2.mkdir(path3.dirname(file2), { recursive: true }, (err) => {
           if (err) return fileOpened(err);
-          fs.open(file2, flags, mode, fileOpened);
+          fs2.open(file2, flags, mode, fileOpened);
         });
       } else {
-        fs.open(file2, flags, mode, fileOpened);
+        fs2.open(file2, flags, mode, fileOpened);
       }
     }
     function SonicBoom(opts) {
@@ -25342,8 +25342,8 @@ var require_sonic_boom = __commonJS({
         this.flush = flushBuffer;
         this.flushSync = flushBufferSync;
         this._actualWrite = actualWriteBuffer;
-        fsWriteSync = () => fs.writeSync(this.fd, this._writingBuf);
-        fsWrite = () => fs.write(this.fd, this._writingBuf, this.release);
+        fsWriteSync = () => fs2.writeSync(this.fd, this._writingBuf);
+        fsWrite = () => fs2.write(this.fd, this._writingBuf, this.release);
       } else if (contentMode === void 0 || contentMode === kContentModeUtf8) {
         this._writingBuf = "";
         this.write = write;
@@ -25352,15 +25352,15 @@ var require_sonic_boom = __commonJS({
         this._actualWrite = actualWrite;
         fsWriteSync = () => {
           if (Buffer.isBuffer(this._writingBuf)) {
-            return fs.writeSync(this.fd, this._writingBuf);
+            return fs2.writeSync(this.fd, this._writingBuf);
           }
-          return fs.writeSync(this.fd, this._writingBuf, "utf8");
+          return fs2.writeSync(this.fd, this._writingBuf, "utf8");
         };
         fsWrite = () => {
           if (Buffer.isBuffer(this._writingBuf)) {
-            return fs.write(this.fd, this._writingBuf, this.release);
+            return fs2.write(this.fd, this._writingBuf, this.release);
           }
-          return fs.write(this.fd, this._writingBuf, "utf8", this.release);
+          return fs2.write(this.fd, this._writingBuf, "utf8", this.release);
         };
       } else {
         throw new Error(`SonicBoom supports "${kContentModeUtf8}" and "${kContentModeBuffer}", but passed ${contentMode}`);
@@ -25417,7 +25417,7 @@ var require_sonic_boom = __commonJS({
           }
         }
         if (this._fsync) {
-          fs.fsyncSync(this.fd);
+          fs2.fsyncSync(this.fd);
         }
         const len = this._len;
         if (this._reopening) {
@@ -25531,7 +25531,7 @@ var require_sonic_boom = __commonJS({
       const onDrain = () => {
         if (!this._fsync) {
           try {
-            fs.fsync(this.fd, (err) => {
+            fs2.fsync(this.fd, (err) => {
               this._flushPending = false;
               cb(err);
             });
@@ -25633,7 +25633,7 @@ var require_sonic_boom = __commonJS({
       const fd = this.fd;
       this.once("ready", () => {
         if (fd !== this.fd) {
-          fs.close(fd, (err) => {
+          fs2.close(fd, (err) => {
             if (err) {
               return this.emit("error", err);
             }
@@ -25682,7 +25682,7 @@ var require_sonic_boom = __commonJS({
           buf = this._bufs[0];
         }
         try {
-          const n = Buffer.isBuffer(buf) ? fs.writeSync(this.fd, buf) : fs.writeSync(this.fd, buf, "utf8");
+          const n = Buffer.isBuffer(buf) ? fs2.writeSync(this.fd, buf) : fs2.writeSync(this.fd, buf, "utf8");
           const releasedBufObj = releaseWritingBuf(buf, this._len, n);
           buf = releasedBufObj.writingBuf;
           this._len = releasedBufObj.len;
@@ -25698,7 +25698,7 @@ var require_sonic_boom = __commonJS({
         }
       }
       try {
-        fs.fsyncSync(this.fd);
+        fs2.fsyncSync(this.fd);
       } catch {
       }
     }
@@ -25719,7 +25719,7 @@ var require_sonic_boom = __commonJS({
           buf = mergeBuf(this._bufs[0], this._lens[0]);
         }
         try {
-          const n = fs.writeSync(this.fd, buf);
+          const n = fs2.writeSync(this.fd, buf);
           buf = buf.subarray(n);
           this._len = Math.max(this._len - n, 0);
           if (buf.length <= 0) {
@@ -25747,13 +25747,13 @@ var require_sonic_boom = __commonJS({
       this._writingBuf = this._writingBuf.length ? this._writingBuf : this._bufs.shift() || "";
       if (this.sync) {
         try {
-          const written = Buffer.isBuffer(this._writingBuf) ? fs.writeSync(this.fd, this._writingBuf) : fs.writeSync(this.fd, this._writingBuf, "utf8");
+          const written = Buffer.isBuffer(this._writingBuf) ? fs2.writeSync(this.fd, this._writingBuf) : fs2.writeSync(this.fd, this._writingBuf, "utf8");
           release(null, written);
         } catch (err) {
           release(err);
         }
       } else {
-        fs.write(this.fd, this._writingBuf, release);
+        fs2.write(this.fd, this._writingBuf, release);
       }
     }
     function actualWriteBuffer() {
@@ -25762,7 +25762,7 @@ var require_sonic_boom = __commonJS({
       this._writingBuf = this._writingBuf.length ? this._writingBuf : mergeBuf(this._bufs.shift(), this._lens.shift());
       if (this.sync) {
         try {
-          const written = fs.writeSync(this.fd, this._writingBuf);
+          const written = fs2.writeSync(this.fd, this._writingBuf);
           release(null, written);
         } catch (err) {
           release(err);
@@ -25771,7 +25771,7 @@ var require_sonic_boom = __commonJS({
         if (kCopyBuffer) {
           this._writingBuf = Buffer.from(this._writingBuf);
         }
-        fs.write(this.fd, this._writingBuf, release);
+        fs2.write(this.fd, this._writingBuf, release);
       }
     }
     function actualClose(sonic) {
@@ -25787,12 +25787,12 @@ var require_sonic_boom = __commonJS({
       sonic._lens = [];
       assert2(typeof sonic.fd === "number", `sonic.fd must be a number, got ${typeof sonic.fd}`);
       try {
-        fs.fsync(sonic.fd, closeWrapped);
+        fs2.fsync(sonic.fd, closeWrapped);
       } catch {
       }
       function closeWrapped() {
         if (sonic.fd !== 1 && sonic.fd !== 2) {
-          fs.close(sonic.fd, done);
+          fs2.close(sonic.fd, done);
         } else {
           done();
         }
@@ -30250,15 +30250,15 @@ var require_pg_connection_string = __commonJS({
       if (config2.sslcert || config2.sslkey || config2.sslrootcert || config2.sslmode) {
         config2.ssl = {};
       }
-      const fs = config2.sslcert || config2.sslkey || config2.sslrootcert ? __require("fs") : null;
+      const fs2 = config2.sslcert || config2.sslkey || config2.sslrootcert ? __require("fs") : null;
       if (config2.sslcert) {
-        config2.ssl.cert = fs.readFileSync(config2.sslcert).toString();
+        config2.ssl.cert = fs2.readFileSync(config2.sslcert).toString();
       }
       if (config2.sslkey) {
-        config2.ssl.key = fs.readFileSync(config2.sslkey).toString();
+        config2.ssl.key = fs2.readFileSync(config2.sslkey).toString();
       }
       if (config2.sslrootcert) {
-        config2.ssl.ca = fs.readFileSync(config2.sslrootcert).toString();
+        config2.ssl.ca = fs2.readFileSync(config2.sslrootcert).toString();
       }
       if (options.useLibpqCompat && config2.uselibpqcompat) {
         throw new Error("Both useLibpqCompat and uselibpqcompat are set. Please use only one of them.");
@@ -32195,15 +32195,15 @@ var require_lib4 = __commonJS({
   "../../node_modules/.pnpm/pgpass@1.0.5/node_modules/pgpass/lib/index.js"(exports, module) {
     "use strict";
     var path3 = __require("path");
-    var fs = __require("fs");
+    var fs2 = __require("fs");
     var helper = require_helper();
     module.exports = function(connInfo, cb) {
       var file2 = helper.getFileName();
-      fs.stat(file2, function(err, stat) {
+      fs2.stat(file2, function(err, stat) {
         if (err || !helper.usePgPass(stat, file2)) {
           return cb(void 0);
         }
-        var st = fs.createReadStream(file2);
+        var st = fs2.createReadStream(file2);
         helper.getPassword(connInfo, st, cb);
       });
     };
@@ -46802,7 +46802,7 @@ var require_make_middleware = __commonJS({
 // ../../node_modules/.pnpm/multer@2.1.1/node_modules/multer/storage/disk.js
 var require_disk = __commonJS({
   "../../node_modules/.pnpm/multer@2.1.1/node_modules/multer/storage/disk.js"(exports, module) {
-    var fs = __require("fs");
+    var fs2 = __require("fs");
     var os = __require("os");
     var path3 = __require("path");
     var crypto5 = __require("crypto");
@@ -46817,7 +46817,7 @@ var require_disk = __commonJS({
     function DiskStorage(opts) {
       this.getFilename = opts.filename || getFilename;
       if (typeof opts.destination === "string") {
-        fs.mkdirSync(opts.destination, { recursive: true });
+        fs2.mkdirSync(opts.destination, { recursive: true });
         this.getDestination = function($0, $1, cb) {
           cb(null, opts.destination);
         };
@@ -46832,7 +46832,7 @@ var require_disk = __commonJS({
         that.getFilename(req, file2, function(err2, filename) {
           if (err2) return cb(err2);
           var finalPath = path3.join(destination, filename);
-          var outStream = fs.createWriteStream(finalPath);
+          var outStream = fs2.createWriteStream(finalPath);
           file2.stream.pipe(outStream);
           outStream.on("error", cb);
           outStream.on("finish", function() {
@@ -46851,7 +46851,7 @@ var require_disk = __commonJS({
       delete file2.destination;
       delete file2.filename;
       delete file2.path;
-      fs.unlink(path4, cb);
+      fs2.unlink(path4, cb);
     };
     module.exports = function(opts) {
       return new DiskStorage(opts);
@@ -65480,6 +65480,8 @@ __export(schema_exports, {
   classCompletionsTable: () => classCompletionsTable,
   classesTable: () => classesTable,
   commentsTable: () => commentsTable,
+  courseLessonsTable: () => courseLessonsTable,
+  courseModulesTable: () => courseModulesTable,
   eventRegistrationsTable: () => eventRegistrationsTable,
   eventTypeEnum: () => eventTypeEnum,
   eventsTable: () => eventsTable,
@@ -65494,6 +65496,7 @@ __export(schema_exports, {
   insertRedemptionSchema: () => insertRedemptionSchema,
   insertRewardSchema: () => insertRewardSchema,
   insertUserProfileSchema: () => insertUserProfileSchema,
+  lessonProgressTable: () => lessonProgressTable,
   paidClassCategoryEnum: () => paidClassCategoryEnum,
   paidClassEnrollmentsTable: () => paidClassEnrollmentsTable,
   paidClassStatusEnum: () => paidClassStatusEnum,
@@ -77129,6 +77132,33 @@ var paymentsTable = pgTable("payments", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   paidAt: timestamp("paid_at", { withTimezone: true })
 });
+var courseModulesTable = pgTable("course_modules", {
+  id: serial("id").primaryKey(),
+  paidClassId: integer("paid_class_id").notNull().references(() => paidClassesTable.id, { onDelete: "cascade" }),
+  title: varchar("title", { length: 255 }).notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var courseLessonsTable = pgTable("course_lessons", {
+  id: serial("id").primaryKey(),
+  moduleId: integer("module_id").notNull().references(() => courseModulesTable.id, { onDelete: "cascade" }),
+  paidClassId: integer("paid_class_id").notNull().references(() => paidClassesTable.id, { onDelete: "cascade" }),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  videoPath: text("video_path"),
+  // filename in the gated course-videos dir (not public)
+  durationSeconds: integer("duration_seconds"),
+  isFreePreview: boolean("is_free_preview").notNull().default(false),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var lessonProgressTable = pgTable("lesson_progress", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => userProfilesTable.id, { onDelete: "cascade" }),
+  lessonId: integer("lesson_id").notNull().references(() => courseLessonsTable.id, { onDelete: "cascade" }),
+  paidClassId: integer("paid_class_id").notNull().references(() => paidClassesTable.id, { onDelete: "cascade" }),
+  completedAt: timestamp("completed_at", { withTimezone: true }).notNull().defaultNow()
+});
 var bookingStatusEnum = pgEnum("booking_status", ["pending", "confirmed", "cancelled"]);
 var bookingsTable = pgTable("bookings", {
   id: serial("id").primaryKey(),
@@ -77674,6 +77704,7 @@ var auth_default = router2;
 var import_express3 = __toESM(require_express2(), 1);
 var import_multer = __toESM(require_multer(), 1);
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 // ../../node_modules/.pnpm/ws@8.20.0/node_modules/ws/wrapper.mjs
@@ -77866,6 +77897,33 @@ var upload = (0, import_multer.default)({
     }
   }
 });
+var courseVideosDir = path.resolve(__dirname2, "../course-videos");
+try {
+  fs.mkdirSync(courseVideosDir, { recursive: true });
+} catch {
+}
+var videoUpload = (0, import_multer.default)({
+  storage: import_multer.default.diskStorage({
+    destination: (_req, _file2, cb) => cb(null, courseVideosDir),
+    filename: (_req, file2, cb) => {
+      const ext = path.extname(file2.originalname).toLowerCase() || ".mp4";
+      cb(null, `${Date.now()}-${Math.random().toString(36).slice(2, 9)}${ext}`);
+    }
+  }),
+  limits: { fileSize: 500 * 1024 * 1024 },
+  // 500 MB max per lesson video
+  fileFilter: (_req, file2, cb) => {
+    if (/^video\//.test(file2.mimetype) || /\.(mp4|webm|mov|m4v|ogg)$/i.test(file2.originalname)) cb(null, true);
+    else cb(new Error("Solo se permiten archivos de video"));
+  }
+});
+function videoContentType(file2) {
+  const ext = path.extname(file2).toLowerCase();
+  if (ext === ".webm") return "video/webm";
+  if (ext === ".ogg" || ext === ".ogv") return "video/ogg";
+  if (ext === ".mov" || ext === ".m4v") return "video/quicktime";
+  return "video/mp4";
+}
 var router3 = (0, import_express3.Router)();
 function getLevel(xp) {
   if (xp >= 1e3) return { level: 6, name: "Maestro", next: null, xpNeeded: 0 };
@@ -79508,11 +79566,11 @@ router3.get("/paid-classes/:id", async (req, res) => {
     const [u] = await db.select().from(userProfilesTable).where(eq(userProfilesTable.id, e.userId)).limit(1);
     return { id: u?.id, username: u?.username, artisticName: u?.artisticName, profileImage: u?.profileImage };
   }));
-  let isEnrolled = false;
+  let isEnrolled2 = false;
   if (req.isAuthenticated()) {
     const profile = await getOrCreateProfile(req.user.id, req.user.username ?? req.user.id, req.user.firstName, req.user.lastName, req.user.profileImageUrl);
     const [enrollment] = await db.select().from(paidClassEnrollmentsTable).where(and(eq(paidClassEnrollmentsTable.paidClassId, cls.id), eq(paidClassEnrollmentsTable.userId, profile.id))).limit(1);
-    isEnrolled = !!enrollment && enrollment.status === "enrolled";
+    isEnrolled2 = !!enrollment && enrollment.status === "enrolled";
   }
   res.json({
     id: cls.id,
@@ -79533,7 +79591,7 @@ router3.get("/paid-classes/:id", async (req, res) => {
     instructorImage: instructor?.profileImage ?? null,
     enrolledCount: Number(enrolled),
     spotsLeft: (cls.maxStudents ?? 10) - Number(enrolled),
-    isEnrolled,
+    isEnrolled: isEnrolled2,
     students,
     createdAt: cls.createdAt.toISOString()
   });
@@ -79570,8 +79628,7 @@ router3.post("/paid-classes", upload.single("paymentProof"), async (req, res) =>
     id: created.id,
     title: created.title,
     status: created.status,
-    paymentProof: created.paymentProof,
-    message: "Solicitud enviada con comprobante de pago. Un admin la revisara pronto."
+    message: "Curso creado. Agrega tus m\xF3dulos y lecciones, y publ\xEDcalo cuando est\xE9 listo."
   });
 });
 router3.post("/paid-classes/:id/enroll", upload.single("paymentProof"), async (req, res) => {
@@ -79798,6 +79855,374 @@ router3.all("/payments/flow/return", async (req, res) => {
     }
   }
   res.redirect(302, `${APP_URL}/paid-classes?pago=${result}${classId ? `&clase=${classId}` : ""}`);
+});
+async function meProfile(req) {
+  return getOrCreateProfile(req.user.id, req.user.username ?? req.user.id, req.user.firstName, req.user.lastName, req.user.profileImageUrl);
+}
+async function loadOwnedClass(classId, profile) {
+  const [cls] = await db.select().from(paidClassesTable).where(eq(paidClassesTable.id, classId)).limit(1);
+  if (!cls) return { error: 404 };
+  if (cls.instructorId !== profile.id && !profile.isAdmin) return { error: 403 };
+  return { cls };
+}
+async function isEnrolled(classId, userId) {
+  const [e] = await db.select({ id: paidClassEnrollmentsTable.id }).from(paidClassEnrollmentsTable).where(and(eq(paidClassEnrollmentsTable.paidClassId, classId), eq(paidClassEnrollmentsTable.userId, userId), eq(paidClassEnrollmentsTable.status, "enrolled"))).limit(1);
+  return !!e;
+}
+function rmVideo(videoPath) {
+  if (!videoPath) return;
+  try {
+    fs.unlinkSync(path.join(courseVideosDir, path.basename(videoPath)));
+  } catch {
+  }
+}
+router3.put("/my-courses/:id", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const profile = await meProfile(req);
+  const r = await loadOwnedClass(parseInt(req.params.id), profile);
+  if (r.error) {
+    res.status(r.error).json({ error: r.error === 404 ? "Curso no encontrado" : "No autorizado" });
+    return;
+  }
+  const { title, description, price, category, coverImage, maxStudents } = req.body;
+  const updates = { updatedAt: /* @__PURE__ */ new Date() };
+  if (title !== void 0) updates.title = String(title).slice(0, 255);
+  if (description !== void 0) updates.description = String(description);
+  if (price !== void 0) updates.price = price === null || price === "" ? null : parseInt(price);
+  if (category !== void 0) updates.category = category;
+  if (coverImage !== void 0) updates.coverImage = coverImage;
+  if (maxStudents !== void 0) updates.maxStudents = parseInt(maxStudents);
+  const [updated] = await db.update(paidClassesTable).set(updates).where(eq(paidClassesTable.id, r.cls.id)).returning();
+  res.json(updated);
+});
+router3.post("/my-courses/:id/publish", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const profile = await meProfile(req);
+  const r = await loadOwnedClass(parseInt(req.params.id), profile);
+  if (r.error) {
+    res.status(r.error).json({ error: r.error === 404 ? "Curso no encontrado" : "No autorizado" });
+    return;
+  }
+  const publish = req.body?.publish !== false;
+  if (publish) {
+    if (!r.cls.price || r.cls.price <= 0) {
+      res.status(400).json({ error: "Define un precio antes de publicar" });
+      return;
+    }
+    const [{ value: n }] = await db.select({ value: count() }).from(courseLessonsTable).where(eq(courseLessonsTable.paidClassId, r.cls.id));
+    if (Number(n) === 0) {
+      res.status(400).json({ error: "Agrega al menos una lecci\xF3n con video antes de publicar" });
+      return;
+    }
+  }
+  const [updated] = await db.update(paidClassesTable).set({ status: publish ? "active" : "pending", updatedAt: /* @__PURE__ */ new Date() }).where(eq(paidClassesTable.id, r.cls.id)).returning();
+  res.json({ id: updated.id, status: updated.status });
+});
+router3.post("/my-courses/:id/modules", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const profile = await meProfile(req);
+  const r = await loadOwnedClass(parseInt(req.params.id), profile);
+  if (r.error) {
+    res.status(r.error).json({ error: "No autorizado" });
+    return;
+  }
+  const [{ value: n }] = await db.select({ value: count() }).from(courseModulesTable).where(eq(courseModulesTable.paidClassId, r.cls.id));
+  const [created] = await db.insert(courseModulesTable).values({ paidClassId: r.cls.id, title: String(req.body?.title || "Nuevo m\xF3dulo").slice(0, 255), sortOrder: Number(n) }).returning();
+  res.status(201).json(created);
+});
+router3.put("/modules/:id", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const profile = await meProfile(req);
+  const [mod] = await db.select().from(courseModulesTable).where(eq(courseModulesTable.id, parseInt(req.params.id))).limit(1);
+  if (!mod) {
+    res.sendStatus(404);
+    return;
+  }
+  const r = await loadOwnedClass(mod.paidClassId, profile);
+  if (r.error) {
+    res.sendStatus(r.error);
+    return;
+  }
+  const updates = {};
+  if (req.body?.title !== void 0) updates.title = String(req.body.title).slice(0, 255);
+  if (req.body?.sortOrder !== void 0) updates.sortOrder = parseInt(req.body.sortOrder);
+  const [updated] = await db.update(courseModulesTable).set(updates).where(eq(courseModulesTable.id, mod.id)).returning();
+  res.json(updated);
+});
+router3.delete("/modules/:id", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const profile = await meProfile(req);
+  const [mod] = await db.select().from(courseModulesTable).where(eq(courseModulesTable.id, parseInt(req.params.id))).limit(1);
+  if (!mod) {
+    res.sendStatus(404);
+    return;
+  }
+  const r = await loadOwnedClass(mod.paidClassId, profile);
+  if (r.error) {
+    res.sendStatus(r.error);
+    return;
+  }
+  const lessons = await db.select().from(courseLessonsTable).where(eq(courseLessonsTable.moduleId, mod.id));
+  for (const l of lessons) rmVideo(l.videoPath);
+  await db.delete(courseModulesTable).where(eq(courseModulesTable.id, mod.id));
+  res.json({ deleted: true });
+});
+router3.post("/modules/:id/lessons", videoUpload.single("video"), async (req, res) => {
+  if (!req.isAuthenticated()) {
+    if (req.file) rmVideo(req.file.filename);
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const profile = await meProfile(req);
+  const [mod] = await db.select().from(courseModulesTable).where(eq(courseModulesTable.id, parseInt(req.params.id))).limit(1);
+  if (!mod) {
+    if (req.file) rmVideo(req.file.filename);
+    res.sendStatus(404);
+    return;
+  }
+  const r = await loadOwnedClass(mod.paidClassId, profile);
+  if (r.error) {
+    if (req.file) rmVideo(req.file.filename);
+    res.sendStatus(r.error);
+    return;
+  }
+  const { title, description, isFreePreview, durationSeconds } = req.body;
+  const [{ value: n }] = await db.select({ value: count() }).from(courseLessonsTable).where(eq(courseLessonsTable.moduleId, mod.id));
+  const [created] = await db.insert(courseLessonsTable).values({
+    moduleId: mod.id,
+    paidClassId: mod.paidClassId,
+    title: String(title || "Nueva lecci\xF3n").slice(0, 255),
+    description: description || null,
+    videoPath: req.file ? req.file.filename : null,
+    durationSeconds: durationSeconds ? parseInt(durationSeconds) : null,
+    isFreePreview: isFreePreview === "true" || isFreePreview === true,
+    sortOrder: Number(n)
+  }).returning();
+  res.status(201).json({ ...created, hasVideo: !!created.videoPath });
+});
+router3.put("/lessons/:id", videoUpload.single("video"), async (req, res) => {
+  if (!req.isAuthenticated()) {
+    if (req.file) rmVideo(req.file.filename);
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const profile = await meProfile(req);
+  const [lesson] = await db.select().from(courseLessonsTable).where(eq(courseLessonsTable.id, parseInt(req.params.id))).limit(1);
+  if (!lesson) {
+    if (req.file) rmVideo(req.file.filename);
+    res.sendStatus(404);
+    return;
+  }
+  const r = await loadOwnedClass(lesson.paidClassId, profile);
+  if (r.error) {
+    if (req.file) rmVideo(req.file.filename);
+    res.sendStatus(r.error);
+    return;
+  }
+  const updates = {};
+  if (req.body?.title !== void 0) updates.title = String(req.body.title).slice(0, 255);
+  if (req.body?.description !== void 0) updates.description = req.body.description || null;
+  if (req.body?.isFreePreview !== void 0) updates.isFreePreview = req.body.isFreePreview === "true" || req.body.isFreePreview === true;
+  if (req.body?.sortOrder !== void 0) updates.sortOrder = parseInt(req.body.sortOrder);
+  if (req.body?.durationSeconds !== void 0) updates.durationSeconds = req.body.durationSeconds ? parseInt(req.body.durationSeconds) : null;
+  if (req.file) {
+    rmVideo(lesson.videoPath);
+    updates.videoPath = req.file.filename;
+  }
+  const [updated] = await db.update(courseLessonsTable).set(updates).where(eq(courseLessonsTable.id, lesson.id)).returning();
+  res.json({ ...updated, hasVideo: !!updated.videoPath });
+});
+router3.delete("/lessons/:id", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const profile = await meProfile(req);
+  const [lesson] = await db.select().from(courseLessonsTable).where(eq(courseLessonsTable.id, parseInt(req.params.id))).limit(1);
+  if (!lesson) {
+    res.sendStatus(404);
+    return;
+  }
+  const r = await loadOwnedClass(lesson.paidClassId, profile);
+  if (r.error) {
+    res.sendStatus(r.error);
+    return;
+  }
+  rmVideo(lesson.videoPath);
+  await db.delete(courseLessonsTable).where(eq(courseLessonsTable.id, lesson.id));
+  res.json({ deleted: true });
+});
+router3.get("/paid-classes/:id/curriculum", async (req, res) => {
+  const classId = parseInt(req.params.id);
+  let profile = null, enrolled = false, isInstr = false;
+  if (req.isAuthenticated()) {
+    profile = await meProfile(req);
+    enrolled = await isEnrolled(classId, profile.id);
+    const [cls] = await db.select({ instructorId: paidClassesTable.instructorId }).from(paidClassesTable).where(eq(paidClassesTable.id, classId)).limit(1);
+    isInstr = !!cls && cls.instructorId === profile.id;
+  }
+  const fullAccess = enrolled || isInstr || (profile?.isAdmin ?? false);
+  const modules = await db.select().from(courseModulesTable).where(eq(courseModulesTable.paidClassId, classId)).orderBy(asc(courseModulesTable.sortOrder), asc(courseModulesTable.id));
+  const lessons = await db.select().from(courseLessonsTable).where(eq(courseLessonsTable.paidClassId, classId)).orderBy(asc(courseLessonsTable.sortOrder), asc(courseLessonsTable.id));
+  let completed = /* @__PURE__ */ new Set();
+  if (profile) {
+    const prog = await db.select({ lessonId: lessonProgressTable.lessonId }).from(lessonProgressTable).where(and(eq(lessonProgressTable.paidClassId, classId), eq(lessonProgressTable.userId, profile.id)));
+    completed = new Set(prog.map((p) => p.lessonId));
+  }
+  const out = modules.map((m) => ({
+    id: m.id,
+    title: m.title,
+    sortOrder: m.sortOrder,
+    lessons: lessons.filter((l) => l.moduleId === m.id).map((l) => {
+      const unlocked = fullAccess || l.isFreePreview;
+      return {
+        id: l.id,
+        title: l.title,
+        description: l.description,
+        durationSeconds: l.durationSeconds,
+        isFreePreview: l.isFreePreview,
+        hasVideo: !!l.videoPath,
+        sortOrder: l.sortOrder,
+        locked: !unlocked,
+        completed: completed.has(l.id),
+        videoUrl: unlocked && l.videoPath ? `/api/lessons/${l.id}/video` : null
+      };
+    })
+  }));
+  res.json({ modules: out, totalLessons: lessons.length, completedCount: completed.size, fullAccess, enrolled, isInstructor: isInstr });
+});
+router3.get("/lessons/:id/video", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.sendStatus(401);
+    return;
+  }
+  const profile = await meProfile(req);
+  const [lesson] = await db.select().from(courseLessonsTable).where(eq(courseLessonsTable.id, parseInt(req.params.id))).limit(1);
+  if (!lesson || !lesson.videoPath) {
+    res.sendStatus(404);
+    return;
+  }
+  let allowed = lesson.isFreePreview || !!profile.isAdmin;
+  if (!allowed) {
+    const [cls] = await db.select({ instructorId: paidClassesTable.instructorId }).from(paidClassesTable).where(eq(paidClassesTable.id, lesson.paidClassId)).limit(1);
+    allowed = !!cls && cls.instructorId === profile.id || await isEnrolled(lesson.paidClassId, profile.id);
+  }
+  if (!allowed) {
+    res.sendStatus(403);
+    return;
+  }
+  const filePath = path.join(courseVideosDir, path.basename(lesson.videoPath));
+  let stat;
+  try {
+    stat = fs.statSync(filePath);
+  } catch {
+    res.sendStatus(404);
+    return;
+  }
+  const fileSize = stat.size;
+  const ctype = videoContentType(filePath);
+  const range = req.headers.range;
+  if (range) {
+    const m = /bytes=(\d+)-(\d*)/.exec(range);
+    const start = m ? parseInt(m[1]) : 0;
+    const end = m && m[2] ? Math.min(parseInt(m[2]), fileSize - 1) : fileSize - 1;
+    if (start >= fileSize || start > end) {
+      res.status(416).set("Content-Range", `bytes */${fileSize}`).end();
+      return;
+    }
+    res.writeHead(206, { "Content-Range": `bytes ${start}-${end}/${fileSize}`, "Accept-Ranges": "bytes", "Content-Length": end - start + 1, "Content-Type": ctype, "Cache-Control": "private, max-age=0" });
+    fs.createReadStream(filePath, { start, end }).pipe(res);
+  } else {
+    res.writeHead(200, { "Content-Length": fileSize, "Content-Type": ctype, "Accept-Ranges": "bytes", "Cache-Control": "private, max-age=0" });
+    fs.createReadStream(filePath).pipe(res);
+  }
+});
+router3.post("/lessons/:id/progress", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const profile = await meProfile(req);
+  const [lesson] = await db.select().from(courseLessonsTable).where(eq(courseLessonsTable.id, parseInt(req.params.id))).limit(1);
+  if (!lesson) {
+    res.sendStatus(404);
+    return;
+  }
+  let allowed = !!profile.isAdmin || await isEnrolled(lesson.paidClassId, profile.id);
+  if (!allowed) {
+    const [cls] = await db.select({ instructorId: paidClassesTable.instructorId }).from(paidClassesTable).where(eq(paidClassesTable.id, lesson.paidClassId)).limit(1);
+    allowed = !!cls && cls.instructorId === profile.id;
+  }
+  if (!allowed) {
+    res.status(403).json({ error: "Inscr\xEDbete para registrar tu progreso" });
+    return;
+  }
+  const completed = req.body?.completed !== false;
+  if (completed) {
+    const [exists2] = await db.select({ id: lessonProgressTable.id }).from(lessonProgressTable).where(and(eq(lessonProgressTable.userId, profile.id), eq(lessonProgressTable.lessonId, lesson.id))).limit(1);
+    if (!exists2) await db.insert(lessonProgressTable).values({ userId: profile.id, lessonId: lesson.id, paidClassId: lesson.paidClassId });
+  } else {
+    await db.delete(lessonProgressTable).where(and(eq(lessonProgressTable.userId, profile.id), eq(lessonProgressTable.lessonId, lesson.id)));
+  }
+  res.json({ completed });
+});
+router3.get("/my-courses/:id/analytics", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const profile = await meProfile(req);
+  const r = await loadOwnedClass(parseInt(req.params.id), profile);
+  if (r.error) {
+    res.status(r.error).json({ error: "No autorizado" });
+    return;
+  }
+  const classId = r.cls.id;
+  const enrollments = await db.select().from(paidClassEnrollmentsTable).where(eq(paidClassEnrollmentsTable.paidClassId, classId));
+  const enrolled = enrollments.filter((e) => e.status === "enrolled");
+  const pending = enrollments.filter((e) => e.status === "pending_payment");
+  const [{ revenue }] = await db.select({ revenue: sql`coalesce(sum(${paymentsTable.amount}),0)` }).from(paymentsTable).where(and(eq(paymentsTable.paidClassId, classId), eq(paymentsTable.type, "enrollment"), eq(paymentsTable.status, "paid")));
+  const lessons = await db.select().from(courseLessonsTable).where(eq(courseLessonsTable.paidClassId, classId)).orderBy(asc(courseLessonsTable.sortOrder), asc(courseLessonsTable.id));
+  const totalLessons = lessons.length;
+  const compRows = await db.select({ lessonId: lessonProgressTable.lessonId, n: count() }).from(lessonProgressTable).where(eq(lessonProgressTable.paidClassId, classId)).groupBy(lessonProgressTable.lessonId);
+  const compMap = new Map(compRows.map((c) => [c.lessonId, Number(c.n)]));
+  const enrolledIds = enrolled.map((e) => e.userId);
+  let students = [];
+  if (enrolledIds.length) {
+    const users = await db.select({ id: userProfilesTable.id, username: userProfilesTable.username, artisticName: userProfilesTable.artisticName, profileImage: userProfilesTable.profileImage }).from(userProfilesTable).where(inArray(userProfilesTable.id, enrolledIds));
+    const umap = new Map(users.map((u) => [u.id, u]));
+    const progRows = await db.select({ userId: lessonProgressTable.userId, n: count() }).from(lessonProgressTable).where(eq(lessonProgressTable.paidClassId, classId)).groupBy(lessonProgressTable.userId);
+    const pmap = new Map(progRows.map((p) => [p.userId, Number(p.n)]));
+    students = enrolled.map((e) => {
+      const u = umap.get(e.userId);
+      const done = pmap.get(e.userId) || 0;
+      return { userId: e.userId, name: u?.artisticName || u?.username || "Alumno", profileImage: u?.profileImage || null, enrolledAt: e.enrolledAt, completed: done, percent: totalLessons ? Math.round(done / totalLessons * 100) : 0 };
+    });
+  }
+  res.json({
+    enrolledCount: enrolled.length,
+    pendingCount: pending.length,
+    revenue: Number(revenue) || 0,
+    totalLessons,
+    avgProgress: students.length ? Math.round(students.reduce((a, s) => a + s.percent, 0) / students.length) : 0,
+    lessons: lessons.map((l) => ({ id: l.id, title: l.title, completedBy: compMap.get(l.id) || 0 })),
+    students
+  });
 });
 router3.get("/my-paid-classes", async (req, res) => {
   if (!req.isAuthenticated()) {
