@@ -577,7 +577,7 @@ var require_supports_color = __commonJS({
         return 1;
       }
       if ("CI" in env) {
-        if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "GITHUB_ACTIONS", "BUILDKITE"].some((sign) => sign in env) || env.CI_NAME === "codeship") {
+        if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "GITHUB_ACTIONS", "BUILDKITE"].some((sign2) => sign2 in env) || env.CI_NAME === "codeship") {
           return 1;
         }
         return min;
@@ -16616,7 +16616,7 @@ var require_sign = __commonJS({
   "../../node_modules/.pnpm/math-intrinsics@1.1.0/node_modules/math-intrinsics/sign.js"(exports, module) {
     "use strict";
     var $isNaN = require_isNaN();
-    module.exports = function sign(number4) {
+    module.exports = function sign2(number4) {
       if ($isNaN(number4) || number4 === 0) {
         return number4;
       }
@@ -16980,7 +16980,7 @@ var require_get_intrinsic = __commonJS({
     var min = require_min();
     var pow = require_pow();
     var round = require_round();
-    var sign = require_sign();
+    var sign2 = require_sign();
     var $Function = Function;
     var getEvalledConstructor = function(expressionSyntax) {
       try {
@@ -17094,7 +17094,7 @@ var require_get_intrinsic = __commonJS({
       "%Math.min%": min,
       "%Math.pow%": pow,
       "%Math.round%": round,
-      "%Math.sign%": sign,
+      "%Math.sign%": sign2,
       "%Reflect.getPrototypeOf%": $ReflectGPO
     };
     if (getProto) {
@@ -18884,14 +18884,14 @@ var require_etag = __commonJS({
   "../../node_modules/.pnpm/etag@1.8.1/node_modules/etag/index.js"(exports, module) {
     "use strict";
     module.exports = etag;
-    var crypto4 = __require("crypto");
+    var crypto5 = __require("crypto");
     var Stats = __require("fs").Stats;
     var toString = Object.prototype.toString;
     function entitytag(entity) {
       if (entity.length === 0) {
         return '"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"';
       }
-      var hash = crypto4.createHash("sha1").update(entity, "utf8").digest("base64").substring(0, 27);
+      var hash = crypto5.createHash("sha1").update(entity, "utf8").digest("base64").substring(0, 27);
       var len = typeof entity === "string" ? Buffer.byteLength(entity, "utf8") : entity.length;
       return '"' + len.toString(16) + "-" + hash + '"';
     }
@@ -22306,17 +22306,17 @@ var require_content_disposition = __commonJS({
 // ../../node_modules/.pnpm/cookie-signature@1.2.2/node_modules/cookie-signature/index.js
 var require_cookie_signature = __commonJS({
   "../../node_modules/.pnpm/cookie-signature@1.2.2/node_modules/cookie-signature/index.js"(exports) {
-    var crypto4 = __require("crypto");
+    var crypto5 = __require("crypto");
     exports.sign = function(val, secret) {
       if ("string" != typeof val) throw new TypeError("Cookie value must be provided as a string.");
       if (null == secret) throw new TypeError("Secret key must be provided.");
-      return val + "." + crypto4.createHmac("sha256", secret).update(val).digest("base64").replace(/\=+$/, "");
+      return val + "." + crypto5.createHmac("sha256", secret).update(val).digest("base64").replace(/\=+$/, "");
     };
     exports.unsign = function(input, secret) {
       if ("string" != typeof input) throw new TypeError("Signed cookie string must be provided.");
       if (null == secret) throw new TypeError("Secret key must be provided.");
       var tentativeValue = input.slice(0, input.lastIndexOf(".")), expectedInput = exports.sign(tentativeValue, secret), expectedBuffer = Buffer.from(expectedInput), inputBuffer = Buffer.from(input);
-      return expectedBuffer.length === inputBuffer.length && crypto4.timingSafeEqual(expectedBuffer, inputBuffer) ? tentativeValue : false;
+      return expectedBuffer.length === inputBuffer.length && crypto5.timingSafeEqual(expectedBuffer, inputBuffer) ? tentativeValue : false;
     };
   }
 });
@@ -23058,7 +23058,7 @@ var require_response = __commonJS({
     var path3 = __require("node:path");
     var pathIsAbsolute = __require("node:path").isAbsolute;
     var statuses = require_statuses();
-    var sign = require_cookie_signature().sign;
+    var sign2 = require_cookie_signature().sign;
     var normalizeType = require_utils3().normalizeType;
     var normalizeTypes = require_utils3().normalizeTypes;
     var setCharset = require_utils3().setCharset;
@@ -23349,7 +23349,7 @@ var require_response = __commonJS({
       }
       var val = typeof value === "object" ? "j:" + JSON.stringify(value) : String(value);
       if (signed) {
-        val = "s:" + sign(val, secret);
+        val = "s:" + sign2(val, secret);
       }
       if (opts.maxAge != null) {
         var maxAge = opts.maxAge - 0;
@@ -23946,11 +23946,11 @@ var require_lib3 = __commonJS({
 // ../../node_modules/.pnpm/cookie-signature@1.0.6/node_modules/cookie-signature/index.js
 var require_cookie_signature2 = __commonJS({
   "../../node_modules/.pnpm/cookie-signature@1.0.6/node_modules/cookie-signature/index.js"(exports) {
-    var crypto4 = __require("crypto");
+    var crypto5 = __require("crypto");
     exports.sign = function(val, secret) {
       if ("string" != typeof val) throw new TypeError("Cookie value must be provided as a string.");
       if ("string" != typeof secret) throw new TypeError("Secret string must be provided.");
-      return val + "." + crypto4.createHmac("sha256", secret).update(val).digest("base64").replace(/\=+$/, "");
+      return val + "." + crypto5.createHmac("sha256", secret).update(val).digest("base64").replace(/\=+$/, "");
     };
     exports.unsign = function(val, secret) {
       if ("string" != typeof val) throw new TypeError("Signed cookie string must be provided.");
@@ -23959,7 +23959,7 @@ var require_cookie_signature2 = __commonJS({
       return sha1(mac) == sha1(val) ? str : false;
     };
     function sha1(str) {
-      return crypto4.createHash("sha1").update(str).digest("hex");
+      return crypto5.createHash("sha1").update(str).digest("hex");
     }
   }
 });
@@ -28803,9 +28803,9 @@ var require_postgres_date = __commonJS({
       if (type === "Z") {
         return 0;
       }
-      var sign = type === "-" ? -1 : 1;
+      var sign2 = type === "-" ? -1 : 1;
       var offset = parseInt(zone[2], 10) * 3600 + parseInt(zone[3] || 0, 10) * 60 + parseInt(zone[4] || 0, 10);
-      return offset * sign * 1e3;
+      return offset * sign2 * 1e3;
     }
     function bcYearToNegativeYear(year) {
       return -(year - 1);
@@ -29170,11 +29170,11 @@ var require_pg_int8 = __commonJS({
     function readInt8(buffer) {
       var high = buffer.readInt32BE(0);
       var low = buffer.readUInt32BE(4);
-      var sign = "";
+      var sign2 = "";
       if (high < 0) {
         high = ~high + (low === 0);
         low = ~low + 1 >>> 0;
-        sign = "-";
+        sign2 = "-";
       }
       var result = "";
       var carry;
@@ -29190,7 +29190,7 @@ var require_pg_int8 = __commonJS({
         low = t / BASE >>> 0;
         digits = "" + (t - BASE * low);
         if (low === 0 && high === 0) {
-          return sign + digits + result;
+          return sign2 + digits + result;
         }
         pad = "";
         l = 6 - digits.length;
@@ -29206,7 +29206,7 @@ var require_pg_int8 = __commonJS({
         low = t / BASE >>> 0;
         digits = "" + (t - BASE * low);
         if (low === 0 && high === 0) {
-          return sign + digits + result;
+          return sign2 + digits + result;
         }
         pad = "";
         l = 6 - digits.length;
@@ -29222,7 +29222,7 @@ var require_pg_int8 = __commonJS({
         low = t / BASE >>> 0;
         digits = "" + (t - BASE * low);
         if (low === 0 && high === 0) {
-          return sign + digits + result;
+          return sign2 + digits + result;
         }
         pad = "";
         l = 6 - digits.length;
@@ -29235,7 +29235,7 @@ var require_pg_int8 = __commonJS({
         carry = high % BASE;
         t = 4294967296 * carry + low;
         digits = "" + t % BASE;
-        return sign + digits + result;
+        return sign2 + digits + result;
       }
     }
     module.exports = readInt8;
@@ -29284,7 +29284,7 @@ var require_binaryParsers = __commonJS({
     };
     var parseFloatFromBits = function(data, precisionBits, exponentBits) {
       var bias = Math.pow(2, exponentBits - 1) - 1;
-      var sign = parseBits(data, 1);
+      var sign2 = parseBits(data, 1);
       var exponent = parseBits(data, exponentBits, 1);
       if (exponent === 0) {
         return 0;
@@ -29305,11 +29305,11 @@ var require_binaryParsers = __commonJS({
       var mantissa = parseBits(data, precisionBits, exponentBits + 1, false, parsePrecisionBits);
       if (exponent == Math.pow(2, exponentBits + 1) - 1) {
         if (mantissa === 0) {
-          return sign === 0 ? Infinity : -Infinity;
+          return sign2 === 0 ? Infinity : -Infinity;
         }
         return NaN;
       }
-      return (sign === 0 ? 1 : -1) * Math.pow(2, exponent - bias) * mantissa;
+      return (sign2 === 0 ? 1 : -1) * Math.pow(2, exponent - bias) * mantissa;
     };
     var parseInt16 = function(value) {
       if (parseBits(value, 1) == 1) {
@@ -29330,8 +29330,8 @@ var require_binaryParsers = __commonJS({
       return parseFloatFromBits(value, 52, 11);
     };
     var parseNumeric = function(value) {
-      var sign = parseBits(value, 16, 32);
-      if (sign == 49152) {
+      var sign2 = parseBits(value, 16, 32);
+      if (sign2 == 49152) {
         return NaN;
       }
       var weight = Math.pow(1e4, parseBits(value, 16, 16));
@@ -29343,12 +29343,12 @@ var require_binaryParsers = __commonJS({
         weight /= 1e4;
       }
       var scale = Math.pow(10, parseBits(value, 16, 48));
-      return (sign === 0 ? 1 : -1) * Math.round(result * scale) / scale;
+      return (sign2 === 0 ? 1 : -1) * Math.round(result * scale) / scale;
     };
     var parseDate = function(isUTC, value) {
-      var sign = parseBits(value, 1);
+      var sign2 = parseBits(value, 1);
       var rawValue = parseBits(value, 63, 1);
-      var result = new Date((sign === 0 ? 1 : -1) * rawValue / 1e3 + 9466848e5);
+      var result = new Date((sign2 === 0 ? 1 : -1) * rawValue / 1e3 + 9466848e5);
       if (!isUTC) {
         result.setTime(result.getTime() + result.getTimezoneOffset() * 6e4);
       }
@@ -29995,7 +29995,7 @@ var require_cert_signatures = __commonJS({
 var require_sasl = __commonJS({
   "../../node_modules/.pnpm/pg@8.20.0/node_modules/pg/lib/crypto/sasl.js"(exports, module) {
     "use strict";
-    var crypto4 = require_utils5();
+    var crypto5 = require_utils5();
     var { signatureAlgorithmHashFromCertificate } = require_cert_signatures();
     function startSession(mechanisms, stream) {
       const candidates = ["SCRAM-SHA-256"];
@@ -30007,7 +30007,7 @@ var require_sasl = __commonJS({
       if (mechanism === "SCRAM-SHA-256-PLUS" && typeof stream.getPeerCertificate !== "function") {
         throw new Error("SASL: Mechanism SCRAM-SHA-256-PLUS requires a certificate");
       }
-      const clientNonce = crypto4.randomBytes(18).toString("base64");
+      const clientNonce = crypto5.randomBytes(18).toString("base64");
       const gs2Header = mechanism === "SCRAM-SHA-256-PLUS" ? "p=tls-server-end-point" : stream ? "y" : "n";
       return {
         mechanism,
@@ -30042,20 +30042,20 @@ var require_sasl = __commonJS({
         const peerCert = stream.getPeerCertificate().raw;
         let hashName = signatureAlgorithmHashFromCertificate(peerCert);
         if (hashName === "MD5" || hashName === "SHA-1") hashName = "SHA-256";
-        const certHash = await crypto4.hashByName(hashName, peerCert);
+        const certHash = await crypto5.hashByName(hashName, peerCert);
         const bindingData = Buffer.concat([Buffer.from("p=tls-server-end-point,,"), Buffer.from(certHash)]);
         channelBinding = bindingData.toString("base64");
       }
       const clientFinalMessageWithoutProof = "c=" + channelBinding + ",r=" + sv.nonce;
       const authMessage = clientFirstMessageBare + "," + serverFirstMessage + "," + clientFinalMessageWithoutProof;
       const saltBytes = Buffer.from(sv.salt, "base64");
-      const saltedPassword = await crypto4.deriveKey(password, saltBytes, sv.iteration);
-      const clientKey = await crypto4.hmacSha256(saltedPassword, "Client Key");
-      const storedKey = await crypto4.sha256(clientKey);
-      const clientSignature = await crypto4.hmacSha256(storedKey, authMessage);
+      const saltedPassword = await crypto5.deriveKey(password, saltBytes, sv.iteration);
+      const clientKey = await crypto5.hmacSha256(saltedPassword, "Client Key");
+      const storedKey = await crypto5.sha256(clientKey);
+      const clientSignature = await crypto5.hmacSha256(storedKey, authMessage);
       const clientProof = xorBuffers(Buffer.from(clientKey), Buffer.from(clientSignature)).toString("base64");
-      const serverKey = await crypto4.hmacSha256(saltedPassword, "Server Key");
-      const serverSignatureBytes = await crypto4.hmacSha256(serverKey, authMessage);
+      const serverKey = await crypto5.hmacSha256(saltedPassword, "Server Key");
+      const serverSignatureBytes = await crypto5.hmacSha256(serverKey, authMessage);
       session.message = "SASLResponse";
       session.serverSignature = Buffer.from(serverSignatureBytes).toString("base64");
       session.response = clientFinalMessageWithoutProof + ",p=" + clientProof;
@@ -32223,7 +32223,7 @@ var require_client = __commonJS({
     var Query2 = require_query();
     var defaults2 = require_defaults();
     var Connection2 = require_connection();
-    var crypto4 = require_utils5();
+    var crypto5 = require_utils5();
     var activeQueryDeprecationNotice = nodeUtils.deprecate(
       () => {
       },
@@ -32458,7 +32458,7 @@ var require_client = __commonJS({
       _handleAuthMD5Password(msg) {
         this._getPassword(async () => {
           try {
-            const hashedPassword = await crypto4.postgresMd5PasswordHash(this.user, this.password, msg.salt);
+            const hashedPassword = await crypto5.postgresMd5PasswordHash(this.user, this.password, msg.salt);
             this.connection.password(hashedPassword);
           } catch (e) {
             this.emit("error", e);
@@ -46805,9 +46805,9 @@ var require_disk = __commonJS({
     var fs = __require("fs");
     var os = __require("os");
     var path3 = __require("path");
-    var crypto4 = __require("crypto");
+    var crypto5 = __require("crypto");
     function getFilename(req, file2, cb) {
-      crypto4.randomBytes(16, function(err, raw) {
+      crypto5.randomBytes(16, function(err, raw) {
         cb(err, err ? void 0 : raw.toString("hex"));
       });
     }
@@ -61039,8 +61039,8 @@ var PgTimestampString = class extends PgColumn {
     const shortened = value.toISOString().slice(0, -1).replace("T", " ");
     if (this.withTimezone) {
       const offset = value.getTimezoneOffset();
-      const sign = offset <= 0 ? "+" : "-";
-      return `${shortened}${sign}${Math.floor(Math.abs(offset) / 60).toString().padStart(2, "0")}`;
+      const sign2 = offset <= 0 ? "+" : "-";
+      return `${shortened}${sign2}${Math.floor(Math.abs(offset) / 60).toString().padStart(2, "0")}`;
     }
     return shortened;
   }
@@ -65499,6 +65499,7 @@ __export(schema_exports, {
   paidClassStatusEnum: () => paidClassStatusEnum,
   paidClassesTable: () => paidClassesTable,
   passwordResetTokensTable: () => passwordResetTokensTable,
+  paymentsTable: () => paymentsTable,
   postLikesTable: () => postLikesTable,
   postsTable: () => postsTable,
   redemptionStatusEnum: () => redemptionStatusEnum,
@@ -77109,6 +77110,25 @@ var paidClassEnrollmentsTable = pgTable("paid_class_enrollments", {
   // student's proof of enrollment payment
   enrolledAt: timestamp("enrolled_at", { withTimezone: true }).notNull().defaultNow()
 });
+var paymentsTable = pgTable("payments", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => userProfilesTable.id),
+  type: varchar("type", { length: 20 }).notNull(),
+  // 'enrollment' | 'registration'
+  paidClassId: integer("paid_class_id").references(() => paidClassesTable.id, { onDelete: "set null" }),
+  enrollmentId: integer("enrollment_id"),
+  // links to paid_class_enrollments (enrollment payments)
+  commerceOrder: varchar("commerce_order", { length: 100 }).notNull().unique(),
+  flowToken: varchar("flow_token", { length: 255 }),
+  flowOrder: integer("flow_order"),
+  amount: integer("amount").notNull(),
+  // CLP
+  status: varchar("status", { length: 20 }).notNull().default("pending"),
+  // 'pending' | 'paid' | 'failed'
+  payerEmail: varchar("payer_email", { length: 255 }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  paidAt: timestamp("paid_at", { withTimezone: true })
+});
 var bookingStatusEnum = pgEnum("booking_status", ["pending", "confirmed", "cancelled"]);
 var bookingsTable = pgTable("bookings", {
   id: serial("id").primaryKey(),
@@ -77759,6 +77779,66 @@ function notifyUser(profileId, data) {
       c.ws.send(json3);
     }
   }
+}
+
+// src/lib/flow.ts
+import crypto4 from "crypto";
+var BASE_URL = (process.env["FLOW_BASE_URL"] || "https://www.flow.cl/api").replace(/\/+$/, "");
+var API_KEY = process.env["FLOW_API_KEY"] || "";
+var SECRET_KEY = process.env["FLOW_SECRET_KEY"] || "";
+function isFlowConfigured() {
+  return Boolean(API_KEY && SECRET_KEY);
+}
+function sign(params) {
+  const toSign = Object.keys(params).sort().map((k) => k + params[k]).join("");
+  return crypto4.createHmac("sha256", SECRET_KEY).update(toSign).digest("hex");
+}
+function withSignature(params) {
+  const flat = { apiKey: API_KEY };
+  for (const [k, v] of Object.entries(params)) flat[k] = String(v);
+  const s = sign(flat);
+  return new URLSearchParams({ ...flat, s });
+}
+async function createPayment(input) {
+  const body = withSignature({
+    commerceOrder: input.commerceOrder,
+    subject: input.subject,
+    currency: "CLP",
+    amount: Math.round(input.amount),
+    email: input.email,
+    paymentMethod: 9,
+    // 9 = let the payer choose any method
+    urlConfirmation: input.urlConfirmation,
+    urlReturn: input.urlReturn
+  });
+  const res = await fetch(`${BASE_URL}/payment/create`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: body.toString()
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data?.url || !data?.token) {
+    logger.error({ status: res.status, data }, "Flow create payment failed");
+    throw new Error(data?.message || "No se pudo crear el pago en Flow");
+  }
+  return { redirectUrl: `${data.url}?token=${data.token}`, token: data.token, flowOrder: data.flowOrder };
+}
+async function getStatus(token) {
+  const qs = withSignature({ token });
+  const res = await fetch(`${BASE_URL}/payment/getStatus?${qs.toString()}`, { method: "GET" });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    logger.error({ status: res.status, data }, "Flow getStatus failed");
+    throw new Error(data?.message || "No se pudo verificar el pago en Flow");
+  }
+  return {
+    flowOrder: Number(data.flowOrder),
+    commerceOrder: String(data.commerceOrder),
+    status: Number(data.status),
+    amount: Number(data.amount),
+    payer: String(data.payer ?? ""),
+    subject: data.subject
+  };
 }
 
 // src/routes/academia.ts
@@ -79545,6 +79625,179 @@ router3.delete("/paid-classes/:id/enroll", async (req, res) => {
   }
   await db.update(paidClassEnrollmentsTable).set({ status: "cancelled" }).where(eq(paidClassEnrollmentsTable.id, existing.id));
   res.json({ enrolled: false, message: "Inscripcion cancelada" });
+});
+var APP_URL = (process.env["APP_URL"] || "https://productoramda.cl").replace(/\/+$/, "");
+var flowUrls = () => ({
+  urlConfirmation: `${APP_URL}/api/payments/flow/confirm`,
+  urlReturn: `${APP_URL}/api/payments/flow/return`
+});
+async function reconcilePayment(token) {
+  const [payment] = await db.select().from(paymentsTable).where(eq(paymentsTable.flowToken, token)).limit(1);
+  if (!payment) return null;
+  if (payment.status === "paid") return { payment, granted: true, status: 2 };
+  const st = await getStatus(token);
+  if (st.status === 2 && st.amount === payment.amount && st.commerceOrder === payment.commerceOrder) {
+    await db.update(paymentsTable).set({ status: "paid", paidAt: /* @__PURE__ */ new Date(), flowOrder: st.flowOrder, payerEmail: st.payer || payment.payerEmail }).where(and(eq(paymentsTable.id, payment.id), eq(paymentsTable.status, "pending")));
+    if (payment.type === "enrollment" && payment.enrollmentId) {
+      await db.update(paidClassEnrollmentsTable).set({ status: "enrolled", paymentConfirmed: true }).where(eq(paidClassEnrollmentsTable.id, payment.enrollmentId));
+    } else if (payment.type === "registration" && payment.paidClassId) {
+      await db.update(paidClassesTable).set({ instructorPaymentConfirmed: true, status: "approved" }).where(eq(paidClassesTable.id, payment.paidClassId));
+    }
+    logger.info({ commerceOrder: payment.commerceOrder, type: payment.type }, "Flow payment confirmed");
+    return { payment, granted: true, status: 2 };
+  }
+  if (st.status === 3 || st.status === 4) {
+    await db.update(paymentsTable).set({ status: "failed" }).where(eq(paymentsTable.id, payment.id));
+    return { payment, granted: false, status: st.status };
+  }
+  if (st.status === 2 && (st.amount !== payment.amount || st.commerceOrder !== payment.commerceOrder)) {
+    logger.error({ expected: payment.amount, got: st.amount, order: payment.commerceOrder }, "Flow amount/order mismatch \u2014 refusing to grant");
+  }
+  return { payment, granted: false, status: st.status };
+}
+router3.post("/paid-classes/:id/pay-enrollment", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  if (!isFlowConfigured()) {
+    res.status(503).json({ error: "Los pagos en l\xEDnea no est\xE1n disponibles por el momento." });
+    return;
+  }
+  const profile = await getOrCreateProfile(req.user.id, req.user.username ?? req.user.id, req.user.firstName, req.user.lastName, req.user.profileImageUrl);
+  const classId = parseInt(req.params.id);
+  const [cls] = await db.select().from(paidClassesTable).where(eq(paidClassesTable.id, classId)).limit(1);
+  if (!cls) {
+    res.status(404).json({ error: "Clase no encontrada" });
+    return;
+  }
+  if (cls.status !== "approved" && cls.status !== "active") {
+    res.status(400).json({ error: "Esta clase no est\xE1 disponible para inscripci\xF3n" });
+    return;
+  }
+  if (!cls.price || cls.price <= 0) {
+    res.status(400).json({ error: "Esta clase no tiene un precio configurado" });
+    return;
+  }
+  const [{ value: enrolled }] = await db.select({ value: count() }).from(paidClassEnrollmentsTable).where(and(eq(paidClassEnrollmentsTable.paidClassId, classId), eq(paidClassEnrollmentsTable.status, "enrolled")));
+  if (Number(enrolled) >= (cls.maxStudents ?? 10)) {
+    res.status(400).json({ error: "Clase llena" });
+    return;
+  }
+  const [existing] = await db.select().from(paidClassEnrollmentsTable).where(and(eq(paidClassEnrollmentsTable.paidClassId, classId), eq(paidClassEnrollmentsTable.userId, profile.id))).limit(1);
+  if (existing && existing.status === "enrolled") {
+    res.status(409).json({ error: "Ya est\xE1s inscrito en esta clase" });
+    return;
+  }
+  let enrollmentId;
+  if (existing) {
+    await db.update(paidClassEnrollmentsTable).set({ status: "pending_payment", paymentConfirmed: false }).where(eq(paidClassEnrollmentsTable.id, existing.id));
+    enrollmentId = existing.id;
+  } else {
+    const [created] = await db.insert(paidClassEnrollmentsTable).values({ paidClassId: classId, userId: profile.id, status: "pending_payment" }).returning();
+    enrollmentId = created.id;
+  }
+  const commerceOrder = `MDA-E-${classId}-${profile.id}-${Date.now().toString(36)}`;
+  const email3 = profile.email || `user${profile.id}@productoramda.cl`;
+  try {
+    const pay = await createPayment({ commerceOrder, subject: `Inscripci\xF3n: ${cls.title}`.slice(0, 80), amount: cls.price, email: email3, ...flowUrls() });
+    await db.insert(paymentsTable).values({
+      userId: profile.id,
+      type: "enrollment",
+      paidClassId: classId,
+      enrollmentId,
+      commerceOrder,
+      flowToken: pay.token,
+      flowOrder: pay.flowOrder,
+      amount: cls.price,
+      status: "pending",
+      payerEmail: email3
+    });
+    res.json({ url: pay.redirectUrl });
+  } catch (e) {
+    logger.error({ err: String(e), classId }, "pay-enrollment failed");
+    res.status(502).json({ error: "No se pudo iniciar el pago. Intenta nuevamente." });
+  }
+});
+router3.post("/paid-classes/:id/pay-registration", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  if (!isFlowConfigured()) {
+    res.status(503).json({ error: "Los pagos en l\xEDnea no est\xE1n disponibles por el momento." });
+    return;
+  }
+  const profile = await getOrCreateProfile(req.user.id, req.user.username ?? req.user.id, req.user.firstName, req.user.lastName, req.user.profileImageUrl);
+  const classId = parseInt(req.params.id);
+  const [cls] = await db.select().from(paidClassesTable).where(eq(paidClassesTable.id, classId)).limit(1);
+  if (!cls) {
+    res.status(404).json({ error: "Clase no encontrada" });
+    return;
+  }
+  if (cls.instructorId !== profile.id) {
+    res.status(403).json({ error: "Solo el instructor de la clase puede pagar su inscripci\xF3n" });
+    return;
+  }
+  if (cls.instructorPaymentConfirmed) {
+    res.status(409).json({ error: "Ya realizaste el pago de inscripci\xF3n de esta clase" });
+    return;
+  }
+  if (!cls.registrationFee || cls.registrationFee <= 0) {
+    res.status(400).json({ error: "Esta clase no requiere pago de inscripci\xF3n" });
+    return;
+  }
+  const commerceOrder = `MDA-R-${classId}-${profile.id}-${Date.now().toString(36)}`;
+  const email3 = profile.email || `user${profile.id}@productoramda.cl`;
+  try {
+    const pay = await createPayment({ commerceOrder, subject: `Inscripci\xF3n instructor: ${cls.title}`.slice(0, 80), amount: cls.registrationFee, email: email3, ...flowUrls() });
+    await db.insert(paymentsTable).values({
+      userId: profile.id,
+      type: "registration",
+      paidClassId: classId,
+      commerceOrder,
+      flowToken: pay.token,
+      flowOrder: pay.flowOrder,
+      amount: cls.registrationFee,
+      status: "pending",
+      payerEmail: email3
+    });
+    res.json({ url: pay.redirectUrl });
+  } catch (e) {
+    logger.error({ err: String(e), classId }, "pay-registration failed");
+    res.status(502).json({ error: "No se pudo iniciar el pago. Intenta nuevamente." });
+  }
+});
+router3.post("/payments/flow/confirm", async (req, res) => {
+  const token = req.body?.token;
+  if (!token) {
+    res.status(400).send("missing token");
+    return;
+  }
+  try {
+    await reconcilePayment(String(token));
+    res.status(200).send("OK");
+  } catch (e) {
+    logger.error({ err: String(e) }, "Flow confirm webhook error");
+    res.status(500).send("error");
+  }
+});
+router3.all("/payments/flow/return", async (req, res) => {
+  const token = req.body?.token || req.query?.token;
+  let result = "pendiente";
+  let classId = "";
+  if (token) {
+    try {
+      const r = await reconcilePayment(String(token));
+      if (r) {
+        classId = r.payment.paidClassId ? String(r.payment.paidClassId) : "";
+        result = r.granted ? "exito" : r.status === 3 || r.status === 4 ? "fallo" : "pendiente";
+      }
+    } catch (e) {
+      logger.error({ err: String(e) }, "Flow return handler error");
+    }
+  }
+  res.redirect(302, `${APP_URL}/paid-classes?pago=${result}${classId ? `&clase=${classId}` : ""}`);
 });
 router3.get("/my-paid-classes", async (req, res) => {
   if (!req.isAuthenticated()) {
